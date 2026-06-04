@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<title>Thực Đơn Cân Bằng</title>
+<link rel="manifest" href='data:application/manifest+json,{"name":"Thực Đơn Cân Bằng","short_name":"ThựcĐơn","start_url":".","display":"standalone","background_color":"%230f766e","theme_color":"%230f766e","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230f766e%22/%3E%3Ctext y=%2270%22 x=%2250%22 font-size=%2260%22 text-anchor=%22middle%22%3E%F0%9F%A5%97%3C/text%3E%3C/svg%3E","sizes":"any","type":"image/svg+xml"}]}'>
+<style>
+  :root{
+    --bg:#f1f5f4; --card:#fff; --ink:#0f172a; --sub:#64748b;
+    --teal:#0f766e; --teal-d:#115e59; --line:#e2e8f0;
+    --green:#16a34a; --greenbg:#dcfce7; --amber:#d97706; --amberbg:#fef3c7;
+    --red:#dc2626; --redbg:#fee2e2;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg);color:var(--ink);padding-bottom:78px;line-height:1.45}
+  header{background:linear-gradient(135deg,var(--teal),var(--teal-d));color:#fff;
+    padding:16px 16px calc(14px + env(safe-area-inset-top));padding-top:calc(16px + env(safe-area-inset-top));position:sticky;top:0;z-index:10}
+  header h1{margin:0;font-size:18px;display:flex;align-items:center;gap:8px}
+  header p{margin:4px 0 0;font-size:12px;opacity:.9}
+  main{padding:14px;max-width:680px;margin:0 auto}
+  .page{display:none} .page.active{display:block;animation:fade .2s}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
+  .card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;
+    box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  h2{font-size:15px;margin:0 0 10px} h3{font-size:13px;margin:14px 0 8px;color:var(--teal-d)}
+  .sub{color:var(--sub);font-size:12px}
+  input,textarea,select,button{font-family:inherit;font-size:15px}
+  .search{display:flex;gap:8px}
+  .search input{flex:1;padding:13px 14px;border:1.5px solid var(--line);border-radius:11px;outline:none}
+  .search input:focus{border-color:var(--teal)}
+  .verdict{margin-top:12px;border-radius:12px;padding:14px;display:none}
+  .verdict.show{display:block;animation:fade .2s}
+  .verdict .big{font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .verdict ul{margin:8px 0 0;padding-left:18px;font-size:13px}
+  .v-green{background:var(--greenbg);color:#14532d}
+  .v-amber{background:var(--amberbg);color:#7c2d12}
+  .v-red{background:var(--redbg);color:#7f1d1d}
+  .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin:2px 4px 2px 0;font-weight:600}
+  .p-red{background:var(--redbg);color:var(--red)} .p-amber{background:var(--amberbg);color:var(--amber)}
+  .p-green{background:var(--greenbg);color:var(--green)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .chip{background:#f1f5f9;border:1px solid var(--line);border-radius:18px;padding:6px 11px;font-size:12px;cursor:pointer}
+  .chip:active{background:var(--teal);color:#fff}
+  .day{border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+  .day-h{background:#f8fafc;padding:10px 13px;font-weight:700;font-size:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+  .day-b{padding:4px 13px 12px}
+  .meal{display:flex;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
+  .meal:first-child{border-top:none}
+  .meal .t{font-size:11px;color:var(--sub);min-width:58px;padding-top:2px}
+  .meal .d{flex:1;font-size:13px}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+  .d-green{background:var(--green)} .d-amber{background:var(--amber)} .d-red{background:var(--red)}
+  button.act{background:var(--teal);color:#fff;border:none;border-radius:11px;padding:13px;width:100%;font-weight:600;cursor:pointer;margin-top:6px}
+  button.act:active{background:var(--teal-d)}
+  button.ghost{background:#fff;color:var(--teal);border:1.5px solid var(--teal)}
+  textarea{width:100%;min-height:120px;padding:12px;border:1.5px solid var(--line);border-radius:11px;outline:none;resize:vertical}
+  .goal{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+  .goal:first-child{border-top:none}
+  .goal .ic{font-size:22px} .goal b{display:block;font-size:14px} .goal span{font-size:12px;color:var(--sub)}
+  .bar{height:8px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin-top:6px}
+  .bar i{display:block;height:100%}
+  nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);
+    display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:20}
+  nav button{flex:1;background:none;border:none;padding:9px 2px 8px;color:var(--sub);font-size:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+  nav button .i{font-size:20px;line-height:1}
+  nav button.on{color:var(--teal)}
+  .note{font-size:11px;color:var(--sub);background:#f8fafc;border-radius:8px;padding:9px;margin-top:8px}
+  .water{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .water .g{width:34px;height:42px;border:2px solid var(--teal);border-radius:4px 4px 8px 8px;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;font-size:10px;color:var(--teal);overflow:hidden;position:relative}
+  .water .g.full{background:var(--teal);color:#fff}
+  details summary{font-weight:600;font-size:13px;cursor:pointer;padding:6px 0}
+  .copybtn{font-size:12px;padding:7px 12px;border-radius:9px;border:1px solid var(--teal);background:#fff;color:var(--teal);cursor:pointer}
+  a{color:var(--teal)}
+</style>
+</head>
+<body>
+<header>
+  <h1>🥗 Thực Đơn Cân Bằng</h1>
+  <p id="hdrsub">Hỗ trợ: acid uric • đường huyết • men gan • thận</p>
+</header>
+
+<main>
+  <!-- ============ TRA CỨU ============ -->
+  <section id="check" class="page active">
+    <div class="card">
+      <h2>🔍 Món này ăn được không?</h2>
+      <div class="search">
+        <input id="q" placeholder="Gõ tên món: lòng heo, phở bò, bia..." autocomplete="off">
+      </div>
+      <div id="verdict" class="verdict"></div>
+      <div class="chips" id="suggchips"></div>
+    </div>
+    <div class="card">
+      <h3>📋 Nguyên tắc cốt lõi cho bạn</h3>
+      <div id="goals"></div>
+    </div>
+  </section>
+
+  <!-- ============ THỰC ĐƠN ============ -->
+  <section id="menu" class="page">
+    <div class="card">
+      <h2>📅 Thực đơn 7 ngày</h2>
+      <p class="sub">Đã cân đối: đạm vừa phải • ít purin • ít đường nhanh • nhiều rau. <span class="dot d-green"></span>nên ăn <span class="dot d-amber"></span>vừa phải <span class="dot d-red"></span>hạn chế</p>
+    </div>
+    <div id="weekly"></div>
+    <div class="card">
+      <h3>⚖️ Cân bằng cả tuần</h3>
+      <div id="balance"></div>
+    </div>
+  </section>
+
+  <!-- ============ ĐI CHỢ ============ -->
+  <section id="shop" class="page">
+    <div class="card">
+      <h2>🛒 Đi chợ gợi ý</h2>
+      <p class="sub">Theo nhóm thực phẩm nên ưu tiên trong tuần.</p>
+      <div id="shoplist"></div>
+    </div>
+  </section>
+
+  <!-- ============ BIA RƯỢU + ĂN NGOÀI ============ -->
+  <section id="habit" class="page">
+    <div class="card">
+      <h2>🍺 Kế hoạch giảm bia rượu</h2>
+      <p class="sub">GGT của bạn 112 (ngưỡng ≤61) — đây là việc quan trọng nhất để hạ men gan.</p>
+      <div id="alcoholplan"></div>
+      <div class="note">💡 Mỗi ngày không uống là một ngày gan hồi phục. Mục tiêu giai đoạn này: <b>0 ly trong 4–6 tuần</b>, sau đó xét nghiệm lại GGT.</div>
+    </div>
+    <div class="card">
+      <h2>🍜 Ăn sáng tiệm — chọn sao?</h2>
+      <div id="breakfast"></div>
+    </div>
+    <div class="card">
+      <h2>🍽️ Ăn ngoài / nhậu — mẹo</h2>
+      <ul style="font-size:13px;padding-left:18px;margin:6px 0">
+        <li>Gọi món <b>luộc/hấp/nướng</b> thay vì chiên, kho mặn.</li>
+        <li><b>Tránh</b>: lòng, dồi, nội tạng, lẩu (nước hầm xương nhiều purin), hải sản vỏ cứng (sò, ốc, tôm nhiều).</li>
+        <li>Ưu tiên <b>ức gà, cá đồng, đậu hũ, rau</b>.</li>
+        <li>Uống nhiều <b>nước lọc</b>; thay bia bằng nước/trà không đường.</li>
+        <li>Hạn chế cơm trắng phần lớn → xin thêm rau.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ NƯỚC + LÀM MỚI ============ -->
+  <section id="more" class="page">
+    <div class="card">
+      <h2>💧 Nước hôm nay (mục tiêu 2–2.5L)</h2>
+      <p class="sub">Uống đủ nước giúp thải acid uric & hỗ trợ thận. Bấm vào ly khi uống xong.</p>
+      <div class="water" id="water"></div>
+    </div>
+    <div class="card">
+      <h2>✨ Làm mới thực đơn bằng Claude</h2>
+      <p class="sub">Mở Claude.ai (gói của bạn) → dán prompt dưới → Claude trả về thực đơn JSON → dán lại vào đây. Không tốn phí API.</p>
+      <button class="copybtn" onclick="copyPrompt()" style="width:100%;padding:11px;margin:6px 0">📋 Sao chép prompt cho Claude</button>
+      <textarea id="paste" placeholder="Dán JSON thực đơn Claude trả về vào đây rồi bấm Áp dụng..."></textarea>
+      <button class="act" onclick="applyMenu()">Áp dụng thực đơn mới</button>
+      <button class="act ghost" onclick="resetMenu()">Khôi phục thực đơn mẫu</button>
+    </div>
+    <div class="card">
+      <h2>ℹ️ Về app này</h2>
+      <p class="sub">App chạy hoàn toàn trên máy bạn, offline. Dữ liệu lưu trong trình duyệt. Đây là công cụ hỗ trợ, <b>không thay thế tư vấn bác sĩ</b> — với creatinine & acid uric cao bạn nên tái khám nội/thận.</p>
+      <details><summary>Cách cài vào màn hình chính điện thoại</summary>
+        <p class="sub" style="margin-top:6px"><b>iPhone (Safari):</b> nút Chia sẻ → "Thêm vào MH chính".<br><b>Android (Chrome):</b> menu ⋮ → "Thêm vào màn hình chính" / "Cài đặt ứng dụng".</p>
+      </details>
+    </div>
+  </section>
+</main>
+
+<nav>
+  <button data-p="check" class="on"><span class="i">🔍</span>Tra cứu</button>
+  <button data-p="menu"><span class="i">📅</span>Thực đơn</button>
+  <button data-p="shop"><span class="i">🛒</span>Đi chợ</button>
+  <button data-p="habit"><span class="i">🍺</span>Thói quen</button>
+  <button data-p="more"><span class="i">⚙️</span>Khác</button>
+</nav>
+
+<script>
+/* ============================================================
+   HỒ SƠ NGƯỜI DÙNG (suy ra từ xét nghiệm 03/06/2026)
+   Acid uric 520↑ | Glucose 6.38↑ | GGT 112↑ | Creatinine 111↑ eGFR66
+   => 4 trục: purin↓, đường nhanh↓, gan(rượu/béo)↓, đạm vừa
+   ============================================================ */
+
+/* Mỗi món gắn 4 cờ mức 0(thấp)–2(cao): purin, sugar, fat, protein
+   verdict tính từ cờ cao nhất so với các trục cần kiêng. */
+const FOODS = [
+  // ĐẠM ĐỘNG VẬT
+  {n:"lòng heo",a:["lòng","nội tạng heo","phá lấu"],p:2,s:0,f:2,pr:2,g:"đạm"},
+  {n:"gan (gan heo, gan gà)",a:["gan heo","gan gà","pate gan"],p:2,s:0,f:1,pr:2,g:"đạm"},
+  {n:"dồi, tiết canh",a:["dồi","tiết canh","huyết"],p:2,s:0,f:1,pr:2,g:"đạm"},
+  {n:"thịt bò",a:["bò","bắp bò","thịt đỏ"],p:2,s:0,f:1,pr:2,g:"đạm"},
+  {n:"thịt dê",a:["dê"],p:2,s:0,f:1,pr:2,g:"đạm"},
+  {n:"thịt heo nạc",a:["heo","thịt lợn","ba chỉ","sườn"],p:1,s:0,f:1,pr:2,g:"đạm"},
+  {n:"thịt gà (bỏ da)",a:["gà","ức gà","đùi gà"],p:1,s:0,f:0,pr:2,g:"đạm"},
+  {n:"cá đồng (cá lóc, rô, diêu hồng)",a:["cá lóc","cá rô","diêu hồng","cá basa","cá đồng"],p:1,s:0,f:0,pr:2,g:"đạm"},
+  {n:"cá biển béo (cá mòi, cá trích, cá cơm)",a:["cá mòi","cá trích","cá cơm","cá nục"],p:2,s:0,f:1,pr:2,g:"đạm"},
+  {n:"tôm",a:["tôm","tép"],p:2,s:0,f:0,pr:2,g:"đạm"},
+  {n:"cua, ghẹ",a:["cua","ghẹ"],p:2,s:0,f:0,pr:2,g:"đạm"},
+  {n:"sò, ốc, nghêu, hàu",a:["sò","ốc","nghêu","hàu","hải sản vỏ"],p:2,s:0,f:0,pr:2,g:"đạm"},
+  {n:"mực",a:["mực"],p:2,s:0,f:0,pr:2,g:"đạm"},
+  {n:"trứng gà",a:["trứng","hột gà","trứng vịt"],p:0,s:0,f:1,pr:1,g:"đạm"},
+  // ĐẠM THỰC VẬT
+  {n:"đậu hũ (đậu phụ)",a:["đậu hũ","đậu phụ","tàu hũ"],p:1,s:0,f:0,pr:1,g:"đạm-tv"},
+  {n:"đậu (đậu xanh, đậu đen)",a:["đậu xanh","đậu đen","đậu đỏ"],p:1,s:1,f:0,pr:1,g:"đạm-tv"},
+  // TINH BỘT
+  {n:"cơm trắng",a:["cơm","gạo trắng"],p:0,s:2,f:0,pr:0,g:"bột"},
+  {n:"gạo lứt",a:["gạo lứt","cơm gạo lứt"],p:0,s:1,f:0,pr:0,g:"bột"},
+  {n:"bún, phở (sợi)",a:["bún","phở","hủ tiếu","bánh phở"],p:0,s:2,f:0,pr:0,g:"bột"},
+  {n:"bánh mì trắng",a:["bánh mì","bánh mỳ"],p:0,s:2,f:0,pr:0,g:"bột"},
+  {n:"khoai lang",a:["khoai lang"],p:0,s:1,f:0,pr:0,g:"bột"},
+  {n:"yến mạch",a:["yến mạch","oat"],p:0,s:0,f:0,pr:0,g:"bột"},
+  // RAU
+  {n:"rau xanh (cải, mồng tơi, rau muống)",a:["rau","cải","mồng tơi","rau muống","xà lách","bông cải"],p:0,s:0,f:0,pr:0,g:"rau"},
+  {n:"măng",a:["măng"],p:1,s:0,f:0,pr:0,g:"rau"},
+  {n:"nấm",a:["nấm"],p:1,s:0,f:0,pr:0,g:"rau"},
+  {n:"giá đỗ, súp lơ, măng tây",a:["giá","súp lơ","măng tây","cải bó xôi"],p:1,s:0,f:0,pr:0,g:"rau"},
+  {n:"cà chua, dưa leo, bí xanh",a:["cà chua","dưa leo","dưa chuột","bí xanh","bầu"],p:0,s:0,f:0,pr:0,g:"rau"},
+  // CANH/MÓN NƯỚC
+  {n:"lẩu / nước hầm xương",a:["lẩu","nước hầm","nước lèo","nước xương","nước dùng"],p:2,s:0,f:1,pr:1,g:"canh"},
+  {n:"canh rau",a:["canh","canh cải","canh bí"],p:0,s:0,f:0,pr:0,g:"canh"},
+  // TRÁI CÂY
+  {n:"trái cây ít ngọt (ổi, bưởi, táo)",a:["ổi","bưởi","táo","thanh long"],p:0,s:1,f:0,pr:0,g:"quả"},
+  {n:"trái cây rất ngọt (xoài, sầu riêng, nhãn, mít)",a:["xoài","sầu riêng","nhãn","mít","vải","nho"],p:0,s:2,f:0,pr:0,g:"quả"},
+  {n:"cherry / quả mọng",a:["cherry","việt quất","dâu"],p:0,s:1,f:0,pr:0,g:"quả"},
+  // ĐỒ UỐNG
+  {n:"bia",a:["bia","heineken","tiger","sài gòn"],p:2,s:1,f:0,pr:0,g:"uống"},
+  {n:"rượu",a:["rượu","whisky","vang","rượu trắng"],p:1,s:1,f:0,pr:0,g:"uống"},
+  {n:"nước ngọt có ga",a:["nước ngọt","coca","pepsi","soda","sting","nước có ga"],p:1,s:2,f:0,pr:0,g:"uống"},
+  {n:"trà sữa, sinh tố đường",a:["trà sữa","sinh tố","nước mía"],p:0,s:2,f:1,pr:0,g:"uống"},
+  {n:"cà phê đen / trà không đường",a:["cà phê","trà","trà xanh","nước lọc","nước"],p:0,s:0,f:0,pr:0,g:"uống"},
+  // ĐỒ NGỌT/BÉO
+  {n:"bánh ngọt, kẹo, chè",a:["bánh ngọt","kẹo","chè","bánh kem","kem"],p:0,s:2,f:1,pr:0,g:"ngọt"},
+  {n:"đồ chiên rán (gà rán, khoai chiên)",a:["chiên","gà rán","khoai chiên","quẩy","đồ rán"],p:1,s:0,f:2,pr:1,g:"béo"},
+];
+
+/* tính verdict dựa trên hồ sơ: kiêng purin & sugar & fat (rượu), đạm vừa */
+function judge(food){
+  const reasons=[]; let level=0; // 0 green 1 amber 2 red
+  const up=(l)=>{if(l>level)level=l;};
+  if(food.p>=2){up(2);reasons.push("Purin CAO → tăng acid uric (đang 520, nguy cơ gout)");}
+  else if(food.p===1){up(1);reasons.push("Purin vừa → ăn ít, không thường xuyên");}
+  if(food.s>=2){up(2);reasons.push("Đường/tinh bột nhanh CAO → glucose đang 6.38 (tiền tiểu đường)");}
+  else if(food.s===1){up(1);reasons.push("Có đường → ăn lượng vừa phải");}
+  if(food.f>=2){up(2);reasons.push("Nhiều dầu mỡ → gánh nặng cho gan (GGT 112) & mỡ máu");}
+  else if(food.f===1){up(Math.max(level,1)?level:1);reasons.push("Hơi béo → chế biến luộc/hấp tốt hơn");}
+  if(food.g==="uống"&&food.n.match(/bia|rượu/)){level=2;reasons.length=0;reasons.push("RƯỢU BIA → nguyên nhân chính làm GGT cao. Giai đoạn này nên KIÊNG hẳn");}
+  if(food.pr>=2 && level<2){reasons.push("Đạm cao → thận eGFR 66, chỉ nên 1 phần vừa/bữa");}
+  return {level,reasons};
+}
+
+function findFood(qraw){
+  const q=qraw.trim().toLowerCase();
+  if(!q)return null;
+  for(const f of FOODS){
+    if(f.n.toLowerCase().includes(q))return f;
+    for(const a of f.a) if(a.toLowerCase().includes(q)||q.includes(a.toLowerCase()))return f;
+  }
+  return null;
+}
+
+const VLABEL=[{t:"✅ NÊN ĂN",c:"v-green"},{t:"⚠️ ĂN VỪA PHẢI",c:"v-amber"},{t:"⛔ NÊN HẠN CHẾ / TRÁNH",c:"v-red"}];
+function renderVerdict(f){
+  const box=document.getElementById('verdict');
+  if(!f){box.className="verdict show v-amber";box.innerHTML=
+    '<div class="big">❓ Chưa có trong dữ liệu</div><ul><li>Nguyên tắc: nếu là nội tạng/hải sản/thịt đỏ/đồ ngọt/chiên/rượu bia → hạn chế. Rau, cá đồng, đậu hũ, gà nạc → ưu tiên.</li></ul>';return;}
+  const j=judge(f);const v=VLABEL[j.level];
+  box.className="verdict show "+v.c;
+  box.innerHTML=`<div class="big">${v.t}: ${f.n}</div><ul>${j.reasons.map(r=>'<li>'+r+'</li>').join('')}</ul>`;
+}
+document.getElementById('q').addEventListener('input',e=>{
+  renderVerdict(findFood(e.target.value));
+});
+// chips gợi ý nhanh
+const QUICK=["phở bò","lòng heo","bia","gà luộc","đậu hũ","sầu riêng","gạo lứt","cơm trắng","tôm","rau muống"];
+document.getElementById('suggchips').innerHTML=QUICK.map(c=>`<span class="chip" onclick="document.getElementById('q').value='${c}';renderVerdict(findFood('${c}'))">${c}</span>`).join('');
+
+/* ===== GOALS ===== */
+const GOALS=[
+  {ic:"🔴",t:"Hạ Acid Uric (520)",d:"Tránh nội tạng, thịt đỏ nhiều, hải sản vỏ, nước hầm xương, bia. Uống ≥2L nước."},
+  {ic:"🟠",t:"Kiểm soát đường (6.38)",d:"Giảm cơm trắng/bánh ngọt/nước ngọt. Ưu tiên gạo lứt, rau, ăn rau trước cơm."},
+  {ic:"🔴",t:"Hạ men gan GGT (112)",d:"KIÊNG rượu bia, giảm đồ chiên rán & dầu mỡ. Ngủ đủ, vận động."},
+  {ic:"🟠",t:"Bảo vệ thận (eGFR 66)",d:"Đạm vừa phải (~1 phần/bữa), không lạm dụng thực phẩm chức năng/đạm bột."},
+];
+document.getElementById('goals').innerHTML=GOALS.map(g=>
+  `<div class="goal"><div class="ic">${g.ic}</div><div><b>${g.t}</b><span>${g.d}</span></div></div>`).join('');
+
+/* ============ THỰC ĐƠN MẪU (cân đối tuần) ============ */
+const DEFAULT_MENU=[
+ {day:"Thứ 2",meals:[
+   {t:"Sáng",d:"Yến mạch + trứng luộc + 1 quả ổi",lv:0},
+   {t:"Trưa",d:"Gạo lứt + cá lóc kho lạt + canh cải + rau luộc",lv:0},
+   {t:"Tối",d:"Cơm ít + ức gà áp chảo + bí xanh luộc",lv:0}]},
+ {day:"Thứ 3",meals:[
+   {t:"Sáng",d:"Phở gà (xin ít bánh, nhiều rau, bỏ nước béo)",lv:1},
+   {t:"Trưa",d:"Gạo lứt + đậu hũ sốt cà + rau muống luộc",lv:0},
+   {t:"Tối",d:"Cá diêu hồng hấp + canh bí đao + khoai lang",lv:0}]},
+ {day:"Thứ 4",meals:[
+   {t:"Sáng",d:"Bánh mì trứng (1 ổ) + dưa leo",lv:1},
+   {t:"Trưa",d:"Cơm gạo lứt + thịt heo nạc luộc + canh mồng tơi",lv:0},
+   {t:"Tối",d:"Đậu hũ + rau cải xào ít dầu + 1 quả táo",lv:0}]},
+ {day:"Thứ 5",meals:[
+   {t:"Sáng",d:"Yến mạch sữa hạt không đường + trứng",lv:0},
+   {t:"Trưa",d:"Cơm + cá rô kho + canh chua cá (ít)",lv:0},
+   {t:"Tối",d:"Ức gà nướng + salad + súp lơ luộc",lv:0}]},
+ {day:"Thứ 6",meals:[
+   {t:"Sáng",d:"Bún (xin ít) + gà luộc + nhiều rau, không nước béo",lv:1},
+   {t:"Trưa",d:"Gạo lứt + đậu hũ + rau luộc + bưởi",lv:0},
+   {t:"Tối",d:"Cá hấp gừng + canh rau + khoai lang",lv:0}]},
+ {day:"Thứ 7",meals:[
+   {t:"Sáng",d:"Trứng + bánh mì đen + cà chua",lv:0},
+   {t:"Trưa",d:"Cơm ít + thịt gà kho gừng + rau muống",lv:0},
+   {t:"Tối",d:"NẾU đi nhậu: gọi gà nướng/cá nướng + rau, NƯỚC LỌC thay bia",lv:1}]},
+ {day:"Chủ nhật",meals:[
+   {t:"Sáng",d:"Yến mạch + chuối + trứng",lv:0},
+   {t:"Trưa",d:"Cơm gạo lứt + cá kho + canh cải + đậu hũ",lv:0},
+   {t:"Tối",d:"Lẩu rau (KHÔNG nước hầm xương) nhiều rau + cá + đậu hũ",lv:1}]},
+];
+function getMenu(){try{return JSON.parse(localStorage.getItem('menu'))||DEFAULT_MENU}catch(e){return DEFAULT_MENU}}
+function renderWeekly(){
+  const m=getMenu();const wrap=document.getElementById('weekly');
+  wrap.innerHTML=m.map((dd,i)=>`<div class="day">
+    <div class="day-h" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+      <span>${dd.day}</span><span class="sub">▾</span></div>
+    <div class="day-b" style="display:${i===0?'block':'none'}">
+      ${dd.meals.map(me=>`<div class="meal"><div class="t">${me.t}</div>
+        <div class="d"><span class="dot d-${['green','amber','red'][me.lv||0]}"></span>${me.d}</div></div>`).join('')}
+    </div></div>`).join('');
+  renderBalance(m);
+}
+function renderBalance(m){
+  // đếm điểm nhóm cả tuần
+  let veg=0,fish=0,redmeat=0,fried=0,total=0;
+  m.forEach(d=>d.meals.forEach(me=>{total++;const t=me.d.toLowerCase();
+    if(t.match(/rau|cải|canh|salad|bí|muống|súp lơ|dưa/))veg++;
+    if(t.match(/cá|đậu hũ|gà/))fish++;
+    if(t.match(/bò|dê|nội tạng|lòng/))redmeat++;
+    if(t.match(/chiên|rán/))fried++;
+  }));
+  const rows=[
+    {l:"Bữa có rau xanh",v:veg,max:total,good:true,c:"var(--green)"},
+    {l:"Đạm lành (cá/đậu/gà nạc)",v:fish,max:total,good:true,c:"var(--teal)"},
+    {l:"Thịt đỏ/nội tạng",v:redmeat,max:total,good:false,c:"var(--red)"},
+    {l:"Món chiên rán",v:fried,max:total,good:false,c:"var(--amber)"},
+  ];
+  document.getElementById('balance').innerHTML=rows.map(r=>{
+    const pct=Math.round(r.v/r.max*100);
+    return `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:13px">
+      <span>${r.l}</span><b>${r.v}/${r.max} bữa</b></div>
+      <div class="bar"><i style="width:${pct}%;background:${r.c}"></i></div></div>`;
+  }).join('')+
+  `<div class="note">${redmeat<=2&&fried<=2?'✅ Tuần cân đối tốt: nhiều rau & đạm lành, ít thịt đỏ và đồ chiên.':'⚠️ Còn nhiều món cần hạn chế — cân nhắc đổi bớt.'}</div>`;
+}
+
+/* ============ ĐI CHỢ ============ */
+const SHOP={
+ "🟢 Nên mua nhiều":["Rau cải, mồng tơi, rau muống, súp lơ","Cá đồng (cá lóc, rô, diêu hồng)","Đậu hũ, đậu các loại","Ức gà / đùi gà bỏ da","Trứng","Gạo lứt, yến mạch","Cà chua, dưa leo, bí xanh","Trái cây ít ngọt: ổi, bưởi, táo"],
+ "🟠 Mua vừa, dùng ít":["Thịt heo nạc","Khoai lang","Bún/phở (lượng nhỏ)","Sữa hạt không đường"],
+ "🔴 Hạn chế / tránh":["Bia, rượu","Nội tạng, lòng, gan, dồi","Thịt bò/dê (nhiều)","Hải sản vỏ: tôm, cua, sò, ốc","Bánh kẹo, nước ngọt","Đồ chiên sẵn","Xương để hầm nước lẩu"],
+};
+document.getElementById('shoplist').innerHTML=Object.entries(SHOP).map(([k,v])=>
+  `<h3>${k}</h3>${v.map(i=>`<div style="font-size:13px;padding:4px 0;border-bottom:1px solid var(--line)">• ${i}</div>`).join('')}`).join('');
+
+/* ============ BIA RƯỢU PLAN ============ */
+const APLAN=[
+ {w:"Tuần 1–2",d:"Mục tiêu 0 ly. Thay bia bằng nước lọc/trà không đường. Báo trước bạn bè bạn đang điều trị gan."},
+ {w:"Tuần 3–4",d:"Giữ 0 ly. Tìm hoạt động thay buổi nhậu: cà phê, đi bộ, thể thao."},
+ {w:"Tuần 5–6",d:"Xét nghiệm lại GGT. Nếu về gần ngưỡng → duy trì; tối đa 1–2 lần/tháng, ≤1–2 ly."},
+];
+document.getElementById('alcoholplan').innerHTML=APLAN.map(p=>
+  `<div class="goal"><div class="ic">📅</div><div><b>${p.w}</b><span>${p.d}</span></div></div>`).join('');
+
+const BFAST=[
+ {n:"Phở/bún gà",lv:1,note:"OK nếu: xin ít bánh, nhiều rau, KHÔNG húp nước béo"},
+ {n:"Bánh mì trứng/chả",lv:1,note:"Được, ăn kèm dưa leo, đừng thêm pate gan"},
+ {n:"Bún bò, bún riêu",lv:2,note:"Nước hầm xương + giò + huyết → purin cao, hạn chế"},
+ {n:"Cháo lòng, phở lòng",lv:2,note:"Nội tạng → TRÁNH"},
+ {n:"Hủ tiếu khô + ức gà",lv:1,note:"Ổn nếu ít sợi, nhiều rau"},
+ {n:"Xôi, bánh ngọt",lv:2,note:"Đường/tinh bột nhanh cao → hạn chế"},
+];
+document.getElementById('breakfast').innerHTML=BFAST.map(b=>
+  `<div class="meal"><div class="d"><span class="dot d-${['green','amber','red'][b.lv]}"></span><b>${b.n}</b><br><span class="sub">${b.note}</span></div></div>`).join('');
+
+/* ============ NƯỚC ============ */
+function renderWater(){
+  const key='water_'+new Date().toDateString();
+  let n=+(localStorage.getItem(key)||0);
+  const wrap=document.getElementById('water');wrap.innerHTML='';
+  for(let i=0;i<8;i++){
+    const g=document.createElement('div');g.className='g'+(i<n?' full':'');g.textContent=i<n?'✓':(i+1)*300;
+    g.onclick=()=>{let cur=+(localStorage.getItem(key)||0);localStorage.setItem(key,i<cur?i:i+1);renderWater();};
+    wrap.appendChild(g);
+  }
+  const lbl=document.createElement('div');lbl.className='sub';lbl.style.width='100%';lbl.style.marginTop='6px';
+  lbl.textContent=`Đã uống ~${n*300}ml / 2400ml`;wrap.appendChild(lbl);
+}
+
+/* ============ CLAUDE PROMPT ============ */
+const CLAUDE_PROMPT=`Bạn là chuyên gia dinh dưỡng. Hãy lên thực đơn 7 ngày (món Việt) cho nam 45 tuổi với các vấn đề:
+- Acid uric cao 520 (nguy cơ gout) -> ÍT PURIN: tránh nội tạng, thịt đỏ nhiều, hải sản vỏ, nước hầm xương, bia rượu.
+- Tiền tiểu đường (glucose 6.38) -> ÍT ĐƯỜNG/TINH BỘT NHANH: ưu tiên gạo lứt, rau.
+- Men gan GGT cao 112 -> KIÊNG rượu bia, ít đồ chiên rán.
+- Thận eGFR 66 -> đạm vừa phải.
+Người này ăn món Việt, hay ăn sáng tiệm, hay ăn ngoài. Cân đối cả tuần đủ dinh dưỡng, đa dạng, không lặp món nhàm.
+CHỈ trả về JSON đúng định dạng sau (không kèm chữ nào khác), lv: 0=nên ăn,1=vừa phải,2=hạn chế:
+[{"day":"Thứ 2","meals":[{"t":"Sáng","d":"...","lv":0},{"t":"Trưa","d":"...","lv":0},{"t":"Tối","d":"...","lv":0}]}, ... đủ 7 ngày tới Chủ nhật]`;
+function copyPrompt(){navigator.clipboard.writeText(CLAUDE_PROMPT).then(()=>alert('Đã sao chép! Mở Claude.ai → dán → gửi → copy JSON Claude trả về → dán vào ô bên dưới.'));}
+function applyMenu(){
+  try{
+    const j=JSON.parse(document.getElementById('paste').value.trim());
+    if(!Array.isArray(j)||!j[0].meals)throw 0;
+    localStorage.setItem('menu',JSON.stringify(j));renderWeekly();
+    document.getElementById('paste').value='';alert('✅ Đã áp dụng thực đơn mới!');
+    document.querySelector('nav button[data-p=menu]').click();
+  }catch(e){alert('JSON chưa đúng định dạng. Hãy copy đúng đoạn JSON Claude trả về.');}
+}
+function resetMenu(){localStorage.removeItem('menu');renderWeekly();alert('Đã khôi phục thực đơn mẫu.');}
+
+/* ============ NAV ============ */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  b.classList.add('on');document.getElementById(b.dataset.p).classList.add('active');
+  window.scrollTo(0,0);
+});
+
+/* init */
+renderWeekly();renderWater();
+
+/* service worker để chạy offline khi đã cài */
+if('serviceWorker' in navigator){
+  const sw=`self.addEventListener('install',e=>self.skipWaiting());
+  self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)))});`;
+  const url=URL.createObjectURL(new Blob([sw],{type:'text/javascript'}));
+  navigator.serviceWorker.register(url).catch(()=>{});
+}
+</script>
+</body>
+</html>
