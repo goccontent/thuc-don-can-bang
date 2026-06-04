@@ -188,54 +188,150 @@
 /* Mỗi món gắn 4 cờ mức 0(thấp)–2(cao): purin, sugar, fat, protein
    verdict tính từ cờ cao nhất so với các trục cần kiêng. */
 const FOODS = [
-  // ĐẠM ĐỘNG VẬT
-  {n:"lòng heo",a:["lòng","nội tạng heo","phá lấu"],p:2,s:0,f:2,pr:2,g:"đạm"},
-  {n:"gan (gan heo, gan gà)",a:["gan heo","gan gà","pate gan"],p:2,s:0,f:1,pr:2,g:"đạm"},
-  {n:"dồi, tiết canh",a:["dồi","tiết canh","huyết"],p:2,s:0,f:1,pr:2,g:"đạm"},
-  {n:"thịt bò",a:["bò","bắp bò","thịt đỏ"],p:2,s:0,f:1,pr:2,g:"đạm"},
-  {n:"thịt dê",a:["dê"],p:2,s:0,f:1,pr:2,g:"đạm"},
-  {n:"thịt heo nạc",a:["heo","thịt lợn","ba chỉ","sườn"],p:1,s:0,f:1,pr:2,g:"đạm"},
-  {n:"thịt gà (bỏ da)",a:["gà","ức gà","đùi gà"],p:1,s:0,f:0,pr:2,g:"đạm"},
-  {n:"cá đồng (cá lóc, rô, diêu hồng)",a:["cá lóc","cá rô","diêu hồng","cá basa","cá đồng"],p:1,s:0,f:0,pr:2,g:"đạm"},
-  {n:"cá liệt (cá nạc biển nhỏ)",a:["cá liệt","cá lẹp"],p:1,s:0,f:0,pr:2,g:"đạm"},
-  {n:"cá biển béo (cá mòi, cá trích, cá cơm)",a:["cá mòi","cá trích","cá cơm","cá nục"],p:2,s:0,f:1,pr:2,g:"đạm"},
-  {n:"tôm",a:["tôm","tép"],p:2,s:0,f:0,pr:2,g:"đạm"},
-  {n:"cua, ghẹ",a:["cua","ghẹ"],p:2,s:0,f:0,pr:2,g:"đạm"},
-  {n:"sò, ốc, nghêu, hàu",a:["sò","ốc","nghêu","hàu","hải sản vỏ"],p:2,s:0,f:0,pr:2,g:"đạm"},
-  {n:"mực",a:["mực"],p:2,s:0,f:0,pr:2,g:"đạm"},
-  {n:"trứng gà",a:["trứng","hột gà","trứng vịt"],p:0,s:0,f:1,pr:1,g:"đạm"},
-  // ĐẠM THỰC VẬT
-  {n:"đậu hũ (đậu phụ)",a:["đậu hũ","đậu phụ","tàu hũ"],p:1,s:0,f:0,pr:1,g:"đạm-tv"},
-  {n:"đậu (đậu xanh, đậu đen)",a:["đậu xanh","đậu đen","đậu đỏ"],p:1,s:1,f:0,pr:1,g:"đạm-tv"},
-  // TINH BỘT
-  {n:"cơm trắng",a:["cơm","gạo trắng"],p:0,s:2,f:0,pr:0,g:"bột"},
-  {n:"gạo lứt",a:["gạo lứt","cơm gạo lứt"],p:0,s:1,f:0,pr:0,g:"bột"},
-  {n:"bún, phở (sợi)",a:["bún","phở","hủ tiếu","bánh phở"],p:0,s:2,f:0,pr:0,g:"bột"},
-  {n:"bánh mì trắng",a:["bánh mì","bánh mỳ"],p:0,s:2,f:0,pr:0,g:"bột"},
-  {n:"khoai lang",a:["khoai lang"],p:0,s:1,f:0,pr:0,g:"bột"},
-  {n:"yến mạch",a:["yến mạch","oat"],p:0,s:0,f:0,pr:0,g:"bột"},
-  // RAU
-  {n:"rau xanh (cải, mồng tơi, rau muống)",a:["rau","cải","mồng tơi","rau muống","xà lách","bông cải"],p:0,s:0,f:0,pr:0,g:"rau"},
-  {n:"măng",a:["măng"],p:1,s:0,f:0,pr:0,g:"rau"},
-  {n:"nấm",a:["nấm"],p:1,s:0,f:0,pr:0,g:"rau"},
-  {n:"giá đỗ, súp lơ, măng tây",a:["giá","súp lơ","măng tây","cải bó xôi"],p:1,s:0,f:0,pr:0,g:"rau"},
-  {n:"cà chua, dưa leo, bí xanh",a:["cà chua","dưa leo","dưa chuột","bí xanh","bầu"],p:0,s:0,f:0,pr:0,g:"rau"},
-  // CANH/MÓN NƯỚC
-  {n:"lẩu / nước hầm xương",a:["lẩu","nước hầm","nước lèo","nước xương","nước dùng"],p:2,s:0,f:1,pr:1,g:"canh"},
-  {n:"canh rau",a:["canh","canh cải","canh bí"],p:0,s:0,f:0,pr:0,g:"canh"},
-  // TRÁI CÂY
-  {n:"trái cây ít ngọt (ổi, bưởi, táo)",a:["ổi","bưởi","táo","thanh long"],p:0,s:1,f:0,pr:0,g:"quả"},
-  {n:"trái cây rất ngọt (xoài, sầu riêng, nhãn, mít)",a:["xoài","sầu riêng","nhãn","mít","vải","nho"],p:0,s:2,f:0,pr:0,g:"quả"},
-  {n:"cherry / quả mọng",a:["cherry","việt quất","dâu"],p:0,s:1,f:0,pr:0,g:"quả"},
-  // ĐỒ UỐNG
-  {n:"bia",a:["bia","heineken","tiger","sài gòn"],p:2,s:1,f:0,pr:0,g:"uống"},
-  {n:"rượu",a:["rượu","whisky","vang","rượu trắng"],p:1,s:1,f:0,pr:0,g:"uống"},
-  {n:"nước ngọt có ga",a:["nước ngọt","coca","pepsi","soda","sting","nước có ga"],p:1,s:2,f:0,pr:0,g:"uống"},
-  {n:"trà sữa, sinh tố đường",a:["trà sữa","sinh tố","nước mía"],p:0,s:2,f:1,pr:0,g:"uống"},
-  {n:"cà phê đen / trà không đường",a:["cà phê","trà","trà xanh","nước lọc","nước"],p:0,s:0,f:0,pr:0,g:"uống"},
-  // ĐỒ NGỌT/BÉO
-  {n:"bánh ngọt, kẹo, chè",a:["bánh ngọt","kẹo","chè","bánh kem","kem"],p:0,s:2,f:1,pr:0,g:"ngọt"},
-  {n:"đồ chiên rán (gà rán, khoai chiên)",a:["chiên","gà rán","khoai chiên","quẩy","đồ rán"],p:1,s:0,f:2,pr:1,g:"béo"},
+  // ===== ĐẠM ĐỘNG VẬT (THỊT) =====
+  {n:"lòng heo",a:["lòng","nội tạng heo","phá lấu"],p:2,s:0,f:2,pr:2,g:"đạm",d:"Nên TRÁNH hẳn — nội tạng purin rất cao"},
+  {n:"gan (gan heo, gan gà)",a:["gan heo","gan gà","pate gan"],p:2,s:0,f:1,pr:2,g:"đạm",d:"Nên TRÁNH — gan purin rất cao"},
+  {n:"dồi, tiết canh, huyết",a:["dồi","tiết canh","huyết"],p:2,s:0,f:1,pr:2,g:"đạm",d:"Nên TRÁNH (cả lý do an toàn vệ sinh)"},
+  {n:"thịt bò",a:["bò","bắp bò","thịt đỏ"],p:2,s:0,f:1,pr:2,g:"đạm",d:"Giai đoạn này hạn chế: ≤100g, ≤1 lần/tuần"},
+  {n:"thịt dê",a:["dê"],p:2,s:0,f:1,pr:2,g:"đạm",d:"Hạn chế: ≤1 lần/tuần"},
+  {n:"thịt heo nạc",a:["heo","thịt lợn","ba chỉ","sườn","nạc"],p:1,s:0,f:1,pr:2,g:"đạm",d:"≤80–100g/bữa, 2–3 bữa/tuần; chọn nạc, bỏ mỡ/da"},
+  {n:"thịt gà (bỏ da)",a:["gà","ức gà","đùi gà","gà luộc"],p:1,s:0,f:0,pr:2,g:"đạm",d:"100–120g/bữa (1 miếng ức), 3–4 bữa/tuần; bỏ da"},
+  {n:"vịt, ngan",a:["vịt","ngan"],p:1,s:0,f:1,pr:2,g:"đạm",d:"≤100g, 1–2 bữa/tuần; bỏ da"},
+  {n:"trứng gà",a:["trứng","hột gà","trứng vịt","trứng cút"],p:0,s:0,f:1,pr:1,g:"đạm",d:"1 quả/ngày (≈6–7 quả/tuần); purin RẤT thấp — nguồn đạm tốt"},
+  // ===== CÁ NƯỚC NGỌT =====
+  {n:"cá lóc (cá quả)",a:["cá lóc","cá quả","cá chuối"],p:1,s:0,f:0,pr:2,g:"cá-ngọt",d:"100–150g/bữa, 2–3 bữa/tuần — cá nạc tốt"},
+  {n:"cá rô đồng",a:["cá rô"],p:1,s:0,f:0,pr:2,g:"cá-ngọt",d:"100–150g/bữa, 2–3 bữa/tuần"},
+  {n:"cá diêu hồng / rô phi",a:["cá diêu hồng","diêu hồng","cá rô phi","rô phi"],p:1,s:0,f:0,pr:2,g:"cá-ngọt",d:"100–150g/bữa, 2–3 bữa/tuần — cá nạc"},
+  {n:"cá trê",a:["cá trê"],p:1,s:0,f:1,pr:2,g:"cá-ngọt",d:"100–120g/bữa, 1–2 bữa/tuần; hơi béo"},
+  {n:"cá chép",a:["cá chép"],p:1,s:0,f:0,pr:2,g:"cá-ngọt",d:"100–150g/bữa, 2 bữa/tuần"},
+  {n:"cá trắm",a:["cá trắm"],p:1,s:0,f:0,pr:2,g:"cá-ngọt",d:"100–150g/bữa, 2 bữa/tuần"},
+  {n:"cá mè",a:["cá mè"],p:1,s:0,f:1,pr:2,g:"cá-ngọt",d:"100–120g, 1 bữa/tuần; cá mè hơi béo"},
+  {n:"cá basa / cá tra",a:["cá basa","cá tra","ba sa"],p:1,s:0,f:1,pr:2,g:"cá-ngọt",d:"100–150g/bữa, 2 bữa/tuần"},
+  {n:"cá thác lác",a:["thác lác","thát lát"],p:1,s:0,f:0,pr:2,g:"cá-ngọt",d:"100–150g/bữa, 2 bữa/tuần — cá nạc"},
+  {n:"cá bống",a:["cá bống"],p:1,s:0,f:0,pr:2,g:"cá-ngọt",d:"100–150g/bữa, 2 bữa/tuần"},
+  {n:"cá kèo",a:["cá kèo"],p:1,s:0,f:0,pr:2,g:"cá-ngọt",d:"100–150g/bữa, 2 bữa/tuần"},
+  {n:"lươn",a:["lươn"],p:2,s:0,f:1,pr:2,g:"cá-ngọt",d:"Hạn chế: ≤1 lần/tuần; lươn purin & béo cao hơn"},
+  {n:"ếch",a:["ếch"],p:1,s:0,f:0,pr:2,g:"cá-ngọt",d:"100–150g/bữa, 1–2 bữa/tuần; thịt nạc"},
+  // ===== CÁ NƯỚC LỢ =====
+  {n:"cá đối",a:["cá đối"],p:1,s:0,f:0,pr:2,g:"cá-lợ",d:"100–150g/bữa, 2 bữa/tuần — cá nạc nước lợ"},
+  {n:"cá chẽm (cá vược)",a:["cá chẽm","cá vược"],p:1,s:0,f:0,pr:2,g:"cá-lợ",d:"100–150g/bữa, 2–3 bữa/tuần — cá nạc tốt"},
+  {n:"cá dứa",a:["cá dứa"],p:1,s:0,f:1,pr:2,g:"cá-lợ",d:"100–120g/bữa, 1–2 bữa/tuần"},
+  {n:"cá măng (cá sữa)",a:["cá măng","cá sữa"],p:1,s:0,f:1,pr:2,g:"cá-lợ",d:"100–120g, 1–2 bữa/tuần"},
+  {n:"cá nâu",a:["cá nâu"],p:1,s:0,f:0,pr:2,g:"cá-lợ",d:"100–150g/bữa, 2 bữa/tuần"},
+  // ===== CÁ NƯỚC MẶN =====
+  {n:"cá liệt (cá nạc biển nhỏ)",a:["cá liệt","cá lẹp"],p:1,s:0,f:0,pr:2,g:"cá-mặn",d:"100–150g/bữa, 2 bữa/tuần — cá nạc"},
+  {n:"cá chẽm biển / cá mú",a:["cá mú","cá song"],p:1,s:0,f:0,pr:2,g:"cá-mặn",d:"100–150g/bữa, 2 bữa/tuần — cá nạc trắng"},
+  {n:"cá hồng / cá đổng",a:["cá hồng","cá đổng"],p:1,s:0,f:0,pr:2,g:"cá-mặn",d:"100–150g/bữa, 2 bữa/tuần"},
+  {n:"cá đù / cá hố",a:["cá đù","cá hố","cá lưỡi"],p:1,s:0,f:1,pr:2,g:"cá-mặn",d:"100–120g/bữa, 1–2 bữa/tuần"},
+  {n:"cá bớp",a:["cá bớp","cá giò"],p:1,s:0,f:1,pr:2,g:"cá-mặn",d:"100–120g/bữa, 1–2 bữa/tuần"},
+  {n:"cá ngân / cá bạc má",a:["cá ngân","cá bạc má"],p:2,s:0,f:1,pr:2,g:"cá-mặn",d:"Hạn chế: ≤1 lần/tuần; cá béo purin cao hơn"},
+  {n:"cá hồi",a:["cá hồi","salmon"],p:1,s:0,f:1,pr:2,g:"cá-mặn",d:"100g, 1–2 lần/tuần — nhiều omega-3 tốt mỡ máu"},
+  {n:"cá thu",a:["cá thu"],p:2,s:0,f:1,pr:2,g:"cá-mặn",d:"Hạn chế khi acid uric cao: ≤1 lần/2 tuần"},
+  {n:"cá ngừ",a:["cá ngừ","cá bò gù"],p:2,s:0,f:1,pr:2,g:"cá-mặn",d:"Hạn chế: ≤1 lần/2 tuần; cá ngừ purin cao"},
+  {n:"cá nục",a:["cá nục"],p:2,s:0,f:1,pr:2,g:"cá-mặn",d:"Hạn chế: ≤1 lần/2 tuần"},
+  {n:"cá cơm",a:["cá cơm"],p:2,s:0,f:1,pr:2,g:"cá-mặn",d:"TRÁNH — cá cơm purin rất cao"},
+  {n:"cá trích",a:["cá trích"],p:2,s:0,f:1,pr:2,g:"cá-mặn",d:"TRÁNH — purin rất cao"},
+  {n:"cá mòi",a:["cá mòi"],p:2,s:0,f:1,pr:2,g:"cá-mặn",d:"TRÁNH — cá mòi purin rất cao"},
+  {n:"cá khô, mắm cá",a:["cá khô","khô cá","mắm","khô"],p:2,s:0,f:1,pr:2,g:"cá-mặn",d:"Hạn chế — cô đặc purin & rất mặn (hại thận)"},
+  {n:"cá (loại khác)",a:["cá"],p:1,s:0,f:0,pr:2,g:"cá-mặn",d:"Cá nạc 100–150g/bữa, 2–3 bữa/tuần; nếu là cá béo (mòi/trích/cơm/thu/ngừ) thì hạn chế"},
+  // ===== HẢI SẢN VỎ =====
+  {n:"tôm, tép",a:["tôm","tép"],p:2,s:0,f:0,pr:2,g:"đạm",d:"Hạn chế khi acid uric cao: thỉnh thoảng ≤50g"},
+  {n:"cua, ghẹ",a:["cua","ghẹ"],p:2,s:0,f:0,pr:2,g:"đạm",d:"Hạn chế: thỉnh thoảng, phần nhỏ"},
+  {n:"sò, ốc, nghêu, hàu",a:["sò","ốc","nghêu","hàu","hải sản vỏ"],p:2,s:0,f:0,pr:2,g:"đạm",d:"Hạn chế — purin cao"},
+  {n:"mực, bạch tuộc",a:["mực","bạch tuộc"],p:2,s:0,f:0,pr:2,g:"đạm",d:"Hạn chế — purin cao"},
+  // ===== ĐẠM THỰC VẬT =====
+  {n:"đậu hũ (đậu phụ)",a:["đậu hũ","đậu phụ","tàu hũ"],p:0,s:0,f:0,pr:1,g:"đạm-tv",d:"1–2 miếng (~150g)/bữa, ăn THƯỜNG XUYÊN được — đạm tốt thay thịt"},
+  {n:"đậu nành, sữa đậu nành",a:["đậu nành","sữa đậu nành","đậu tương"],p:0,s:0,f:0,pr:1,g:"đạm-tv",d:"1 ly sữa không đường/ngày; purin thực vật không làm tăng gout"},
+  {n:"đậu xanh, đậu đen, đậu đỏ",a:["đậu xanh","đậu đen","đậu đỏ","đậu trắng"],p:0,s:1,f:0,pr:1,g:"đạm-tv",d:"1 chén nhỏ; tốt nhưng có tinh bột — không ăn thêm cơm"},
+  // ===== CÁC LOẠI HẠT =====
+  {n:"hạnh nhân",a:["hạnh nhân","almond"],p:0,s:0,f:1,pr:1,g:"hạt",d:"1 nắm nhỏ ~30g/ngày — tốt cho mỡ máu & đường; chọn loại không muối"},
+  {n:"óc chó",a:["óc chó","walnut"],p:0,s:0,f:1,pr:1,g:"hạt",d:"~30g/ngày (4–5 hạt) — giàu omega-3, tốt cho gan & tim"},
+  {n:"hạt điều",a:["hạt điều","điều","cashew"],p:0,s:0,f:1,pr:1,g:"hạt",d:"~30g/ngày; chọn không muối, không rang dầu"},
+  {n:"hạt macca",a:["macca","macadamia"],p:0,s:0,f:1,pr:1,g:"hạt",d:"~20–30g/ngày; nhiều calo, ăn vừa"},
+  {n:"hạt dẻ cười (pistachio)",a:["dẻ cười","pistachio","hồ trăn"],p:0,s:0,f:1,pr:1,g:"hạt",d:"~30g/ngày; không muối"},
+  {n:"đậu phộng (lạc)",a:["đậu phộng","lạc","peanut"],p:1,s:0,f:1,pr:1,g:"hạt",d:"~30g/ngày, rang/luộc KHÔNG muối; purin vừa nhưng vẫn ổn"},
+  {n:"hạt bí",a:["hạt bí","pumpkin seed"],p:0,s:0,f:1,pr:0,g:"hạt",d:"1–2 thìa/ngày; không muối"},
+  {n:"hạt hướng dương",a:["hướng dương","hạt dưa","sunflower"],p:0,s:0,f:1,pr:0,g:"hạt",d:"1–2 thìa/ngày; loại không muối"},
+  {n:"mè (vừng)",a:["mè","vừng","sesame"],p:0,s:0,f:1,pr:0,g:"hạt",d:"1–2 thìa/ngày rắc lên món ăn"},
+  {n:"hạt chia",a:["chia"],p:0,s:0,f:0,pr:0,g:"hạt",d:"1–2 thìa/ngày ngâm nước; tốt cho tiêu hóa & đường huyết"},
+  {n:"hạt lanh",a:["hạt lanh","flax"],p:0,s:0,f:0,pr:0,g:"hạt",d:"1–2 thìa/ngày; omega-3 thực vật"},
+  {n:"hạt sen",a:["hạt sen","sen"],p:0,s:1,f:0,pr:0,g:"hạt",d:"1 chén nhỏ; bổ nhưng có tinh bột"},
+  {n:"hạt dẻ",a:["hạt dẻ","chestnut"],p:0,s:1,f:0,pr:0,g:"hạt",d:"Vài hạt; nhiều tinh bột — ăn ít"},
+  // ===== TINH BỘT =====
+  {n:"cơm trắng",a:["cơm","gạo trắng","cơm trắng"],p:0,s:2,f:0,pr:0,g:"bột",d:"≤1 lưng chén/bữa; nên thay 1 phần bằng gạo lứt"},
+  {n:"gạo lứt",a:["gạo lứt","cơm gạo lứt"],p:0,s:1,f:0,pr:0,g:"bột",d:"1 chén/bữa — thay cơm trắng, đường huyết ổn hơn"},
+  {n:"bún, phở, hủ tiếu (sợi)",a:["bún","phở","hủ tiếu","bánh phở","mì"],p:0,s:2,f:0,pr:0,g:"bột",d:"1 vắt vừa; ăn kèm nhiều rau & đạm để giảm tăng đường"},
+  {n:"bánh mì trắng",a:["bánh mì","bánh mỳ"],p:0,s:2,f:0,pr:0,g:"bột",d:"Hạn chế; chọn bánh mì đen/nguyên cám"},
+  {n:"bánh mì đen / nguyên cám",a:["bánh mì đen","nguyên cám","yến mạch bánh"],p:0,s:1,f:0,pr:0,g:"bột",d:"1 ổ nhỏ; tốt hơn bánh mì trắng"},
+  {n:"khoai lang",a:["khoai lang"],p:0,s:1,f:0,pr:0,g:"bột",d:"1 củ nhỏ (~150g) THAY cơm, không ăn thêm cơm"},
+  {n:"yến mạch",a:["yến mạch","oat","oatmeal"],p:0,s:0,f:0,pr:0,g:"bột",d:"40–50g khô/bữa sáng — rất tốt cho đường & mỡ máu"},
+  // ===== RAU LÁ & RAU CỦ QUẢ (không tinh bột) =====
+  {n:"rau muống",a:["rau muống"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái 1–2 bát/bữa; ưu tiên luộc"},
+  {n:"cải (cải xanh, cải ngọt, cải thìa, cải bẹ)",a:["cải xanh","cải ngọt","cải thìa","cải bẹ","cải ngồng","cải"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái, 1–2 bát/bữa"},
+  {n:"mồng tơi",a:["mồng tơi"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái; nấu canh mát, lợi tiểu tốt cho acid uric"},
+  {n:"rau dền",a:["rau dền","dền"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái 1–2 bát/bữa"},
+  {n:"rau lang",a:["rau lang","ngọn khoai"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái; luộc/xào ít dầu"},
+  {n:"rau ngót",a:["rau ngót"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái, nấu canh"},
+  {n:"cải bó xôi (rau bina)",a:["cải bó xôi","bó xôi","rau bina","spinach"],p:0,s:0,f:0,pr:0,g:"rau",d:"Ăn bình thường — purin thực vật KHÔNG làm tăng acid uric"},
+  {n:"xà lách, rau sống",a:["xà lách","rau sống","rau thơm"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái; rửa sạch ăn kèm"},
+  {n:"bắp cải",a:["bắp cải","cải bắp"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái; luộc/cuốn"},
+  {n:"rau má",a:["rau má"],p:0,s:0,f:0,pr:0,g:"rau",d:"Tốt, mát gan; nước rau má KHÔNG đường"},
+  {n:"bí xanh (bí đao)",a:["bí xanh","bí đao"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái; lợi tiểu, rất tốt cho acid uric"},
+  {n:"bầu, mướp",a:["bầu","mướp"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái, nấu canh"},
+  {n:"dưa leo (dưa chuột)",a:["dưa leo","dưa chuột"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái; mát, ít calo"},
+  {n:"cà chua",a:["cà chua"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái"},
+  {n:"cà tím",a:["cà tím","cà dái dê"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái; nướng/hấp, tránh chiên ngập dầu"},
+  {n:"đậu bắp",a:["đậu bắp","mướp tây"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái; tốt cho đường huyết"},
+  {n:"su su, su hào",a:["su su","su hào"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái, luộc/xào ít dầu"},
+  {n:"củ cải trắng",a:["củ cải trắng","củ cải"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái; lợi tiểu"},
+  {n:"cà rốt",a:["cà rốt"],p:0,s:1,f:0,pr:0,g:"rau",d:"Vừa phải; ngọt nhẹ — không ăn quá nhiều"},
+  {n:"ớt chuông, hành tây",a:["ớt chuông","hành tây","ớt ngọt"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái"},
+  // rau purin thực vật cao – khoa học hiện đại: KHÔNG làm tăng gout
+  {n:"măng",a:["măng","măng tre","măng le"],p:0,s:0,f:0,pr:0,g:"rau",d:"Ăn bình thường — purin thực vật không làm tăng acid uric"},
+  {n:"nấm các loại",a:["nấm","nấm rơm","nấm kim châm","nấm hương"],p:0,s:0,f:0,pr:0,g:"rau",d:"Ăn bình thường — purin thực vật KHÔNG làm tăng gout"},
+  {n:"giá đỗ",a:["giá","giá đỗ"],p:0,s:0,f:0,pr:0,g:"rau",d:"Ăn bình thường"},
+  {n:"súp lơ / bông cải (xanh, trắng)",a:["súp lơ","bông cải","bông cải xanh","broccoli"],p:0,s:0,f:0,pr:0,g:"rau",d:"Ăn bình thường — rất tốt, purin thực vật không tăng gout"},
+  {n:"măng tây",a:["măng tây","asparagus"],p:0,s:0,f:0,pr:0,g:"rau",d:"Ăn bình thường — nghiên cứu cho thấy không tăng gout"},
+  {n:"đậu cô ve, đậu Hà Lan",a:["đậu cô ve","đậu hà lan","đậu que"],p:0,s:0,f:0,pr:0,g:"rau",d:"Ăn bình thường"},
+  {n:"rau (loại khác)",a:["rau"],p:0,s:0,f:0,pr:0,g:"rau",d:"Hầu hết rau xanh đều tốt — ăn 300–400g/ngày, ưu tiên luộc/hấp"},
+  // ===== CỦ NHIỀU TINH BỘT (tính như cơm) =====
+  {n:"khoai tây",a:["khoai tây"],p:0,s:2,f:0,pr:0,g:"củ-bột",d:"Tính như tinh bột — phần nhỏ THAY cơm; tránh chiên"},
+  {n:"khoai môn, khoai sọ",a:["khoai môn","khoai sọ"],p:0,s:1,f:0,pr:0,g:"củ-bột",d:"Phần nhỏ thay cơm"},
+  {n:"bí đỏ",a:["bí đỏ","bí ngô"],p:0,s:1,f:0,pr:0,g:"củ-bột",d:"Phần nhỏ; ngọt & tăng đường nhanh hơn rau"},
+  {n:"bắp (ngô)",a:["bắp","ngô"],p:0,s:2,f:0,pr:0,g:"củ-bột",d:"½ trái thay cơm; hạn chế bắp ngọt/nướng mỡ hành"},
+  {n:"củ dền, củ sen",a:["củ dền","củ sen"],p:0,s:1,f:0,pr:0,g:"củ-bột",d:"Phần nhỏ; có đường, ăn vừa"},
+  // ===== CANH / MÓN NƯỚC =====
+  {n:"lẩu / nước hầm xương",a:["lẩu","nước hầm","nước lèo","nước xương","nước dùng","nước béo"],p:2,s:0,f:1,pr:1,g:"canh",d:"Hạn chế nước hầm xương (purin cao); ăn cái + rau, đừng húp nước béo"},
+  {n:"canh rau",a:["canh rau","canh cải","canh bí","canh"],p:0,s:0,f:0,pr:0,g:"canh",d:"Thoải mái mỗi bữa; nấu với cá nạc/đậu hũ"},
+  // ===== TRÁI CÂY =====
+  {n:"ổi",a:["ổi"],p:0,s:1,f:0,pr:0,g:"quả",d:"1–2 quả/ngày; ít ngọt, nhiều chất xơ & vitamin C (tốt acid uric)"},
+  {n:"bưởi",a:["bưởi"],p:0,s:1,f:0,pr:0,g:"quả",d:"2–3 múi/ngày; ít ngọt, nhiều vitamin C"},
+  {n:"táo",a:["táo"],p:0,s:1,f:0,pr:0,g:"quả",d:"1 quả/ngày"},
+  {n:"thanh long",a:["thanh long"],p:0,s:1,f:0,pr:0,g:"quả",d:"½–1 quả/ngày; ít ngọt"},
+  {n:"cam, quýt",a:["cam","quýt"],p:0,s:1,f:0,pr:0,g:"quả",d:"1 quả/ngày; ăn múi tốt hơn vắt nước"},
+  {n:"đu đủ chín",a:["đu đủ"],p:0,s:1,f:0,pr:0,g:"quả",d:"1 miếng vừa/ngày"},
+  {n:"lê",a:["lê"],p:0,s:1,f:0,pr:0,g:"quả",d:"1 quả/ngày"},
+  {n:"kiwi",a:["kiwi"],p:0,s:1,f:0,pr:0,g:"quả",d:"1–2 quả/ngày; giàu vitamin C"},
+  {n:"bơ",a:["bơ","avocado"],p:0,s:0,f:1,pr:0,g:"quả",d:"½–1 quả/ngày — chất béo tốt, ít đường, không thêm sữa/đường"},
+  {n:"dưa hấu",a:["dưa hấu"],p:0,s:2,f:0,pr:0,g:"quả",d:"Phần nhỏ; ngọt & tăng đường nhanh"},
+  {n:"chuối chín",a:["chuối"],p:0,s:1,f:0,pr:0,g:"quả",d:"½–1 quả/ngày; chọn chuối vừa chín"},
+  {n:"cherry / việt quất / dâu",a:["cherry","việt quất","blueberry","dâu","dâu tây"],p:0,s:1,f:0,pr:0,g:"quả",d:"~1 chén/ngày — cherry giúp GIẢM acid uric"},
+  {n:"xoài chín",a:["xoài"],p:0,s:2,f:0,pr:0,g:"quả",d:"Hạn chế — đường & fructose cao làm tăng acid uric & đường huyết"},
+  {n:"sầu riêng",a:["sầu riêng"],p:0,s:2,f:1,pr:0,g:"quả",d:"Hạn chế mạnh — rất ngọt & béo"},
+  {n:"nhãn, vải, chôm chôm",a:["nhãn","vải","chôm chôm"],p:0,s:2,f:0,pr:0,g:"quả",d:"Hạn chế — rất ngọt"},
+  {n:"mít",a:["mít"],p:0,s:2,f:0,pr:0,g:"quả",d:"Hạn chế — rất ngọt"},
+  {n:"nho",a:["nho"],p:0,s:2,f:0,pr:0,g:"quả",d:"Hạn chế — ngọt, fructose cao"},
+  {n:"na (mãng cầu), hồng",a:["na","mãng cầu","hồng"],p:0,s:2,f:0,pr:0,g:"quả",d:"Hạn chế — rất ngọt"},
+  // ===== ĐỒ UỐNG =====
+  {n:"bia",a:["bia","heineken","tiger","sài gòn"],p:2,s:1,f:0,pr:0,g:"uống",d:"KIÊNG — nguyên nhân chính làm GGT cao & tăng acid uric"},
+  {n:"rượu",a:["rượu","whisky","vang","rượu trắng","rượu vang"],p:1,s:1,f:0,pr:0,g:"uống",d:"KIÊNG giai đoạn này (men gan cao)"},
+  {n:"nước ngọt có ga",a:["nước ngọt","coca","pepsi","soda","sting","nước có ga"],p:1,s:2,f:0,pr:0,g:"uống",d:"TRÁNH — đường & fructose tăng acid uric + đường huyết"},
+  {n:"trà sữa, sinh tố ngọt, nước mía",a:["trà sữa","sinh tố","nước mía"],p:0,s:2,f:1,pr:0,g:"uống",d:"TRÁNH — rất nhiều đường"},
+  {n:"cà phê / trà không đường",a:["cà phê","trà","trà xanh"],p:0,s:0,f:0,pr:0,g:"uống",d:"1–2 ly/ngày KHÔNG đường; cà phê có thể giúp giảm acid uric"},
+  {n:"nước lọc",a:["nước lọc","nước","nước khoáng"],p:0,s:0,f:0,pr:0,g:"uống",d:"2–2.5 L/ngày — quan trọng để thải acid uric & đỡ thận"},
+  // ===== ĐỒ NGỌT / BÉO =====
+  {n:"bánh ngọt, kẹo, chè, kem",a:["bánh ngọt","kẹo","chè","bánh kem","kem","bánh"],p:0,s:2,f:1,pr:0,g:"ngọt",d:"TRÁNH — đường nhanh, hại đường huyết"},
+  {n:"đồ chiên rán (gà rán, khoai chiên)",a:["chiên","gà rán","khoai chiên","quẩy","đồ rán","chiên giòn"],p:1,s:0,f:2,pr:1,g:"béo",d:"Hạn chế — nhiều dầu, gánh nặng cho gan (GGT)"},
 ];
 
 /* tính verdict dựa trên hồ sơ: kiêng purin & sugar & fat (rượu), đạm vừa */
@@ -247,7 +343,7 @@ function judge(food){
   if(food.s>=2){up(2);reasons.push("Đường/tinh bột nhanh CAO → glucose đang 6.38 (tiền tiểu đường)");}
   else if(food.s===1){up(1);reasons.push("Có đường → ăn lượng vừa phải");}
   if(food.f>=2){up(2);reasons.push("Nhiều dầu mỡ → gánh nặng cho gan (GGT 112) & mỡ máu");}
-  else if(food.f===1){up(Math.max(level,1)?level:1);reasons.push("Hơi béo → chế biến luộc/hấp tốt hơn");}
+  else if(food.f===1){reasons.push("Hơi béo → nên luộc/hấp/kho thay vì chiên");}
   if(food.g==="uống"&&food.n.match(/bia|rượu/)){level=2;reasons.length=0;reasons.push("RƯỢU BIA → nguyên nhân chính làm GGT cao. Giai đoạn này nên KIÊNG hẳn");}
   if(food.pr>=2 && level<2){reasons.push("Đạm cao → thận eGFR 66, chỉ nên 1 phần vừa/bữa");}
   return {level,reasons};
@@ -256,11 +352,20 @@ function judge(food){
 function findFood(qraw){
   const q=qraw.trim().toLowerCase();
   if(!q)return null;
+  let best=null,bestScore=0;
   for(const f of FOODS){
-    if(f.n.toLowerCase().includes(q))return f;
-    for(const a of f.a) if(a.toLowerCase().includes(q)||q.includes(a.toLowerCase()))return f;
+    let sc=0;const name=f.n.toLowerCase();
+    if(name===q)sc=100;
+    for(const a of f.a){const al=a.toLowerCase();
+      if(al===q)sc=Math.max(sc,90);                                   // khớp alias chính xác
+      else if((' '+q+' ').includes(' '+al+' '))sc=Math.max(sc,70);    // alias là 1 từ trong câu
+      else if(q.includes(al))sc=Math.max(sc,40+al.length);            // alias dài hơn = sát hơn
+      else if(al.includes(q))sc=Math.max(sc,30+q.length);
+    }
+    if(name.includes(q))sc=Math.max(sc,20+q.length);
+    if(sc>bestScore){bestScore=sc;best=f;}
   }
-  return null;
+  return bestScore>0?best:null;
 }
 
 const VLABEL=[{t:"✅ NÊN ĂN",c:"v-green"},{t:"⚠️ ĂN VỪA PHẢI",c:"v-amber"},{t:"⛔ NÊN HẠN CHẾ / TRÁNH",c:"v-red"}];
@@ -270,13 +375,14 @@ function renderVerdict(f){
     '<div class="big">❓ Chưa có trong dữ liệu</div><ul><li>Nguyên tắc: nếu là nội tạng/hải sản/thịt đỏ/đồ ngọt/chiên/rượu bia → hạn chế. Rau, cá đồng, đậu hũ, gà nạc → ưu tiên.</li></ul>';return;}
   const j=judge(f);const v=VLABEL[j.level];
   box.className="verdict show "+v.c;
-  box.innerHTML=`<div class="big">${v.t}: ${f.n}</div><ul>${j.reasons.map(r=>'<li>'+r+'</li>').join('')}</ul>`;
+  const dose=f.d?`<div style="margin-top:10px;padding:9px 11px;background:rgba(255,255,255,.55);border-radius:9px;font-size:13px"><b>🍽️ Khẩu phần gợi ý:</b> ${f.d}</div>`:'';
+  box.innerHTML=`<div class="big">${v.t}: ${f.n}</div><ul>${j.reasons.map(r=>'<li>'+r+'</li>').join('')}</ul>${dose}`;
 }
 document.getElementById('q').addEventListener('input',e=>{
   renderVerdict(findFood(e.target.value));
 });
 // chips gợi ý nhanh
-const QUICK=["phở bò","lòng heo","bia","gà luộc","đậu hũ","sầu riêng","gạo lứt","cơm trắng","tôm","rau muống"];
+const QUICK=["trứng gà","cá liệt","cá thu","cá hồi","hạnh nhân","măng","sầu riêng","bưởi","đậu hũ","tôm","lòng heo","bia"];
 document.getElementById('suggchips').innerHTML=QUICK.map(c=>`<span class="chip" onclick="document.getElementById('q').value='${c}';renderVerdict(findFood('${c}'))">${c}</span>`).join('');
 
 /* ===== GOALS ===== */
@@ -292,33 +398,33 @@ document.getElementById('goals').innerHTML=GOALS.map(g=>
 /* ============ THỰC ĐƠN MẪU (cân đối tuần) ============ */
 const DEFAULT_MENU=[
  {day:"Thứ 2",meals:[
-   {t:"Sáng",d:"Yến mạch + trứng luộc + 1 quả ổi",lv:0},
-   {t:"Trưa",d:"Gạo lứt + cá lóc kho lạt + canh cải + rau luộc",lv:0},
-   {t:"Tối",d:"Cơm ít + ức gà áp chảo + bí xanh luộc",lv:0}]},
+   {t:"Sáng",d:"Yến mạch (40g) + 1 trứng gà luộc + 1 quả ổi nhỏ",lv:0},
+   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + cá lóc kho lạt (120g) + rau muống luộc (1 bát) + canh bí đao",lv:0},
+   {t:"Tối",d:"Cơm gạo lứt (lưng chén) + ức gà áp chảo (100g) + bông cải xanh luộc (1 bát)",lv:0}]},
  {day:"Thứ 3",meals:[
-   {t:"Sáng",d:"Phở gà (xin ít bánh, nhiều rau, bỏ nước béo)",lv:1},
-   {t:"Trưa",d:"Gạo lứt + đậu hũ sốt cà + rau muống luộc",lv:0},
-   {t:"Tối",d:"Cá diêu hồng hấp + canh bí đao + khoai lang",lv:0}]},
+   {t:"Sáng",d:"Phở gà (1 tô, xin ít bánh, nhiều rau, không húp nước béo)",lv:1},
+   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + đậu hũ sốt cà (2 miếng) + cải ngọt luộc (1 bát)",lv:0},
+   {t:"Tối",d:"Cá diêu hồng hấp gừng (150g) + canh cải bẹ xanh + khoai lang luộc (1 củ nhỏ)",lv:0}]},
  {day:"Thứ 4",meals:[
-   {t:"Sáng",d:"Bánh mì trứng (1 ổ) + dưa leo",lv:1},
-   {t:"Trưa",d:"Cơm gạo lứt + thịt heo nạc luộc + canh mồng tơi",lv:0},
-   {t:"Tối",d:"Đậu hũ + rau cải xào ít dầu + 1 quả táo",lv:0}]},
+   {t:"Sáng",d:"Bánh mì đen (1 ổ) + 1 trứng ốp ít dầu + dưa leo",lv:1},
+   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + thịt heo nạc luộc (80g) + canh mồng tơi + cà chua",lv:0},
+   {t:"Tối",d:"Đậu hũ hấp (2 miếng) + cải thìa xào tỏi ít dầu (1 bát) + 1 quả táo",lv:0}]},
  {day:"Thứ 5",meals:[
-   {t:"Sáng",d:"Yến mạch sữa hạt không đường + trứng",lv:0},
-   {t:"Trưa",d:"Cơm + cá rô kho + canh chua cá (ít)",lv:0},
-   {t:"Tối",d:"Ức gà nướng + salad + súp lơ luộc",lv:0}]},
+   {t:"Sáng",d:"Yến mạch (40g) + sữa đậu nành không đường + 1 nắm hạnh nhân (~25g)",lv:0},
+   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + cá rô đồng kho (120g) + rau lang luộc (1 bát)",lv:0},
+   {t:"Tối",d:"Ức gà nướng (100g) + salad xà lách-cà chua (dầu ô liu) + bí xanh luộc",lv:0}]},
  {day:"Thứ 6",meals:[
-   {t:"Sáng",d:"Bún (xin ít) + gà luộc + nhiều rau, không nước béo",lv:1},
-   {t:"Trưa",d:"Gạo lứt + đậu hũ + rau luộc + bưởi",lv:0},
-   {t:"Tối",d:"Cá hấp gừng + canh rau + khoai lang",lv:0}]},
+   {t:"Sáng",d:"Bún cá lóc (1 tô, ít bún, nhiều rau)",lv:1},
+   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + đậu hũ kho (2 miếng) + canh chua cá basa (100g cá) + 1 múi bưởi",lv:1},
+   {t:"Tối",d:"Cá chẽm hấp (150g) + rau muống luộc (1 bát) + ½ củ khoai lang",lv:0}]},
  {day:"Thứ 7",meals:[
-   {t:"Sáng",d:"Trứng + bánh mì đen + cà chua",lv:0},
-   {t:"Trưa",d:"Cơm ít + thịt gà kho gừng + rau muống",lv:0},
-   {t:"Tối",d:"NẾU đi nhậu: gọi gà nướng/cá nướng + rau, NƯỚC LỌC thay bia",lv:1}]},
+   {t:"Sáng",d:"2 trứng gà luộc + bánh mì đen + cà chua",lv:0},
+   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + gà kho gừng (100g, bỏ da) + cải xanh luộc (1 bát)",lv:0},
+   {t:"Tối",d:"NẾU đi nhậu: gà nướng/cá nướng (1 phần) + nhiều rau sống, NƯỚC LỌC thay bia",lv:1}]},
  {day:"Chủ nhật",meals:[
-   {t:"Sáng",d:"Yến mạch + chuối + trứng",lv:0},
-   {t:"Trưa",d:"Cơm gạo lứt + cá kho + canh cải + đậu hũ",lv:0},
-   {t:"Tối",d:"Lẩu rau (KHÔNG nước hầm xương) nhiều rau + cá + đậu hũ",lv:1}]},
+   {t:"Sáng",d:"Yến mạch (40g) + ½ quả chuối + 1 nắm óc chó (~25g)",lv:0},
+   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + cá trắm kho (120g) + canh cải + đậu hũ (1 miếng)",lv:0},
+   {t:"Tối",d:"Lẩu rau (nước nấm/rau, KHÔNG hầm xương) + cá diêu hồng (150g) + nhiều rau + đậu hũ",lv:1}]},
 ];
 function getMenu(){try{return JSON.parse(localStorage.getItem('menu'))||DEFAULT_MENU}catch(e){return DEFAULT_MENU}}
 function renderWeekly(){
@@ -358,9 +464,9 @@ function renderBalance(m){
 
 /* ============ ĐI CHỢ ============ */
 const SHOP={
- "🟢 Nên mua nhiều":["Rau cải, mồng tơi, rau muống, súp lơ","Cá đồng (cá lóc, rô, diêu hồng)","Đậu hũ, đậu các loại","Ức gà / đùi gà bỏ da","Trứng","Gạo lứt, yến mạch","Cà chua, dưa leo, bí xanh","Trái cây ít ngọt: ổi, bưởi, táo"],
- "🟠 Mua vừa, dùng ít":["Thịt heo nạc","Khoai lang","Bún/phở (lượng nhỏ)","Sữa hạt không đường"],
- "🔴 Hạn chế / tránh":["Bia, rượu","Nội tạng, lòng, gan, dồi","Thịt bò/dê (nhiều)","Hải sản vỏ: tôm, cua, sò, ốc","Bánh kẹo, nước ngọt","Đồ chiên sẵn","Xương để hầm nước lẩu"],
+ "🟢 Nên mua nhiều":["Rau lá: cải, mồng tơi, rau muống, rau lang, bí xanh, bầu","Cá nạc nước ngọt: cá lóc, rô, diêu hồng, basa","Cá nạc biển/lợ: cá liệt, cá chẽm, cá đối, cá mú","Đậu hũ, sữa đậu nành không đường","Ức gà / đùi gà (bỏ da)","Trứng gà","Gạo lứt, yến mạch","Hạt: hạnh nhân, óc chó, hạt điều, hạt bí (không muối)","Trái cây ít ngọt: ổi, bưởi, táo, thanh long, bơ"],
+ "🟠 Mua vừa, dùng ít":["Thịt heo nạc","Cá hồi (1–2 lần/tuần)","Khoai lang, khoai tây, bắp (thay cơm)","Bún/phở (lượng nhỏ)","Chuối, cam (1 phần/ngày)"],
+ "🔴 Hạn chế / tránh":["Bia, rượu","Nội tạng: lòng, gan, dồi, tiết canh","Thịt bò/dê (nhiều)","Hải sản vỏ: tôm, cua, sò, ốc, mực","Cá béo: cá mòi, trích, cơm, nục, thu, ngừ","Cá khô, mắm (mặn + purin cao)","Trái cây rất ngọt: sầu riêng, xoài, nhãn, vải, mít, nho","Bánh kẹo, nước ngọt, trà sữa","Đồ chiên sẵn","Xương để hầm nước lẩu"],
 };
 document.getElementById('shoplist').innerHTML=Object.entries(SHOP).map(([k,v])=>
   `<h3>${k}</h3>${v.map(i=>`<div style="font-size:13px;padding:4px 0;border-bottom:1px solid var(--line)">• ${i}</div>`).join('')}`).join('');
@@ -406,6 +512,7 @@ const CLAUDE_PROMPT=`Bạn là chuyên gia dinh dưỡng. Hãy lên thực đơn
 - Men gan GGT cao 112 -> KIÊNG rượu bia, ít đồ chiên rán.
 - Thận eGFR 66 -> đạm vừa phải.
 Người này ăn món Việt, hay ăn sáng tiệm, hay ăn ngoài. Cân đối cả tuần đủ dinh dưỡng, đa dạng, không lặp món nhàm.
+QUAN TRỌNG: ghi RÕ TÊN món cụ thể (rau gì, cá gì) và KHẨU PHẦN (gram/chén/bát/quả), KHÔNG nói chung chung "rau" hay "cá". Ưu tiên cá nạc (cá lóc, rô, diêu hồng, chẽm, liệt), đậu hũ, ức gà, rau xanh, gạo lứt. Tránh nội tạng, hải sản vỏ, cá béo (mòi/trích/cơm/thu/ngừ), trái cây rất ngọt, đồ chiên, rượu bia.
 CHỈ trả về JSON đúng định dạng sau (không kèm chữ nào khác), lv: 0=nên ăn,1=vừa phải,2=hạn chế:
 [{"day":"Thứ 2","meals":[{"t":"Sáng","d":"...","lv":0},{"t":"Trưa","d":"...","lv":0},{"t":"Tối","d":"...","lv":0}]}, ... đủ 7 ngày tới Chủ nhật]`;
 function copyPrompt(){navigator.clipboard.writeText(CLAUDE_PROMPT).then(()=>alert('Đã sao chép! Mở Claude.ai → dán → gửi → copy JSON Claude trả về → dán vào ô bên dưới.'));}
