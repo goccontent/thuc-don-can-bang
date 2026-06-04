@@ -105,6 +105,7 @@
       <h2>📅 Thực đơn 7 ngày</h2>
       <p class="sub">Đã cân đối: đạm vừa phải • ít purin • ít đường nhanh • nhiều rau. <span class="dot d-green"></span>nên ăn <span class="dot d-amber"></span>vừa phải <span class="dot d-red"></span>hạn chế</p>
     </div>
+    <div class="card" id="proteinCard"></div>
     <div id="weekly"></div>
     <div class="card">
       <h3>⚖️ Cân bằng cả tuần</h3>
@@ -398,44 +399,81 @@ document.getElementById('goals').innerHTML=GOALS.map(g=>
 /* ============ THỰC ĐƠN MẪU (cân đối tuần) ============ */
 const DEFAULT_MENU=[
  {day:"Thứ 2",meals:[
-   {t:"Sáng",d:"Yến mạch (40g) + 1 trứng gà luộc + 1 quả ổi nhỏ",lv:0},
-   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + cá lóc kho lạt (120g) + rau muống luộc (1 bát) + canh bí đao",lv:0},
-   {t:"Tối",d:"Cơm gạo lứt (lưng chén) + ức gà áp chảo (100g) + bông cải xanh luộc (1 bát)",lv:0}]},
+   {t:"Sáng",d:"Yến mạch (40g) + 1 trứng gà luộc + 1 quả ổi nhỏ",lv:0,pg:12},
+   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + cá lóc kho lạt (120g) + rau muống luộc (1 bát) + canh bí đao",lv:0,pg:34},
+   {t:"Tối",d:"Cơm gạo lứt (lưng chén) + ức gà áp chảo (100g) + bông cải xanh luộc (1 bát)",lv:0,pg:36}]},
  {day:"Thứ 3",meals:[
-   {t:"Sáng",d:"Phở gà (1 tô, xin ít bánh, nhiều rau, không húp nước béo)",lv:1},
-   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + đậu hũ sốt cà (2 miếng) + cải ngọt luộc (1 bát)",lv:0},
-   {t:"Tối",d:"Cá diêu hồng hấp gừng (150g) + canh cải bẹ xanh + khoai lang luộc (1 củ nhỏ)",lv:0}]},
+   {t:"Sáng",d:"Phở gà (1 tô, xin ít bánh, nhiều rau, không húp nước béo)",lv:1,pg:18},
+   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + đậu hũ sốt cà (2 miếng) + cải ngọt luộc (1 bát)",lv:0,pg:23},
+   {t:"Tối",d:"Cá diêu hồng hấp gừng (150g) + canh cải bẹ xanh + khoai lang luộc (1 củ nhỏ)",lv:0,pg:34}]},
  {day:"Thứ 4",meals:[
-   {t:"Sáng",d:"Bánh mì đen (1 ổ) + 1 trứng ốp ít dầu + dưa leo",lv:1},
-   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + thịt heo nạc luộc (80g) + canh mồng tơi + cà chua",lv:0},
-   {t:"Tối",d:"Đậu hũ hấp (2 miếng) + cải thìa xào tỏi ít dầu (1 bát) + 1 quả táo",lv:0}]},
+   {t:"Sáng",d:"Bánh mì đen (1 ổ) + 1 trứng ốp ít dầu + dưa leo + 1 ly sữa đậu nành",lv:1,pg:21},
+   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + thịt heo nạc luộc (80g) + canh mồng tơi + cà chua",lv:0,pg:24},
+   {t:"Tối",d:"Đậu hũ hấp (2 miếng) + cải thìa xào tỏi ít dầu (1 bát) + 1 quả táo",lv:0,pg:18}]},
  {day:"Thứ 5",meals:[
-   {t:"Sáng",d:"Yến mạch (40g) + sữa đậu nành không đường + 1 nắm hạnh nhân (~25g)",lv:0},
-   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + cá rô đồng kho (120g) + rau lang luộc (1 bát)",lv:0},
-   {t:"Tối",d:"Ức gà nướng (100g) + salad xà lách-cà chua (dầu ô liu) + bí xanh luộc",lv:0}]},
+   {t:"Sáng",d:"Yến mạch (40g) + sữa đậu nành không đường + 1 nắm hạnh nhân (~25g)",lv:0,pg:18},
+   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + cá rô đồng kho (120g) + rau lang luộc (1 bát)",lv:0,pg:34},
+   {t:"Tối",d:"Ức gà nướng (100g) + salad xà lách-cà chua (dầu ô liu) + bí xanh luộc",lv:0,pg:34}]},
  {day:"Thứ 6",meals:[
-   {t:"Sáng",d:"Bún cá lóc (1 tô, ít bún, nhiều rau)",lv:1},
-   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + đậu hũ kho (2 miếng) + canh chua cá basa (100g cá) + 1 múi bưởi",lv:1},
-   {t:"Tối",d:"Cá chẽm hấp (150g) + rau muống luộc (1 bát) + ½ củ khoai lang",lv:0}]},
+   {t:"Sáng",d:"Bún cá lóc (1 tô, ít bún, nhiều rau)",lv:1,pg:20},
+   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + đậu hũ kho (2 miếng) + canh chua cá basa (100g cá) + 1 múi bưởi",lv:1,pg:40},
+   {t:"Tối",d:"Cá chẽm hấp (150g) + rau muống luộc (1 bát) + ½ củ khoai lang",lv:0,pg:35}]},
  {day:"Thứ 7",meals:[
-   {t:"Sáng",d:"2 trứng gà luộc + bánh mì đen + cà chua",lv:0},
-   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + gà kho gừng (100g, bỏ da) + cải xanh luộc (1 bát)",lv:0},
-   {t:"Tối",d:"NẾU đi nhậu: gà nướng/cá nướng (1 phần) + nhiều rau sống, NƯỚC LỌC thay bia",lv:1}]},
+   {t:"Sáng",d:"2 trứng gà luộc + bánh mì đen + cà chua",lv:0,pg:20},
+   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + gà kho gừng (100g, bỏ da) + cải xanh luộc (1 bát)",lv:0,pg:38},
+   {t:"Tối",d:"NẾU đi nhậu: gà nướng/cá nướng (1 phần) + nhiều rau sống, NƯỚC LỌC thay bia",lv:1,pg:25}]},
  {day:"Chủ nhật",meals:[
-   {t:"Sáng",d:"Yến mạch (40g) + ½ quả chuối + 1 nắm óc chó (~25g)",lv:0},
-   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + cá trắm kho (120g) + canh cải + đậu hũ (1 miếng)",lv:0},
-   {t:"Tối",d:"Lẩu rau (nước nấm/rau, KHÔNG hầm xương) + cá diêu hồng (150g) + nhiều rau + đậu hũ",lv:1}]},
+   {t:"Sáng",d:"Yến mạch (40g) + ½ quả chuối + 1 nắm óc chó (~25g)",lv:0,pg:11},
+   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + cá trắm kho (120g) + canh cải + đậu hũ (1 miếng)",lv:0,pg:39},
+   {t:"Tối",d:"Lẩu rau (nước nấm/rau, KHÔNG hầm xương) + cá diêu hồng (150g) + nhiều rau + đậu hũ",lv:1,pg:34}]},
 ];
+/* ===== PROTEIN: mục tiêu theo cân nặng (thận nhẹ → đạm vừa phải) ===== */
+function getWeight(){return +(localStorage.getItem('weight')||56);}
+function setWeight(v){localStorage.setItem('weight',v);renderWeekly();}
+function proteinTarget(){const w=getWeight();return{w,min:Math.round(w*0.8),rec:Math.round(w*1.0),max:Math.round(w*1.2)};}
+function dayProtein(dd){const ps=dd.meals.map(m=>typeof m.pg==='number'?m.pg:null);
+  const has=ps.every(x=>x!==null);return{sum:ps.reduce((a,b)=>a+(b||0),0),has};}
+function renderProtein(m){
+  const t=proteinTarget();
+  const days=m.map(dd=>({day:dd.day,...dayProtein(dd)}));
+  const full=days.filter(d=>d.has);
+  const avg=full.length?Math.round(full.reduce((a,d)=>a+d.sum,0)/full.length):0;
+  function verdict(s){if(s<t.min)return{c:'amber',t:'thiếu'};if(s<=t.max)return{c:'green',t:'đủ-tốt'};return{c:'red',t:'hơi nhiều'};}
+  const av=verdict(avg);
+  const bars=days.map(d=>{
+    if(!d.has)return `<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:var(--sub)"><span>${d.day}</span><span>—</span></div>`;
+    const v=verdict(d.sum);const pct=Math.min(100,Math.round(d.sum/(t.max*1.25)*100));
+    return `<div style="margin:5px 0"><div style="display:flex;justify-content:space-between;font-size:12px"><span>${d.day}</span><b>${d.sum}g</b></div>
+      <div class="bar"><i style="width:${pct}%;background:var(--${v.c==='green'?'green':v.c==='amber'?'amber':'red'})"></i></div></div>`;
+  }).join('');
+  const msg = avg<t.min ? `⚠️ Trung bình ${avg}g/ngày — <b>thiếu</b> so với nhu cầu. Thêm trứng/đậu hũ/cá vào bữa thấp.`
+            : avg<=t.max ? `✅ Trung bình ${avg}g/ngày — <b>đủ và phù hợp</b> cho cân nặng ${t.w}kg. Nguồn đạm đa dạng, ít purin.`
+            : `🟠 Trung bình ${avg}g/ngày — <b>hơi cao</b> so với ${t.w}kg. Không thiếu đạm; với thận nhẹ (eGFR 66) nên giảm bớt phần cá/thịt về ~${t.rec}–${t.max}g/ngày.`;
+  document.getElementById('proteinCard').innerHTML=`
+    <h2>💪 Thanh đo Protein</h2>
+    <div style="display:flex;align-items:center;gap:10px;margin:6px 0 10px">
+      <label class="sub">Cân nặng của bạn:</label>
+      <input id="wInput" type="number" value="${t.w}" min="30" max="150" style="width:72px;padding:7px;border:1.5px solid var(--line);border-radius:8px"> <span class="sub">kg</span>
+    </div>
+    <div class="note" style="margin-top:0">🎯 Mục tiêu đạm/ngày cho ${t.w}kg (thận nhẹ → đạm vừa phải):
+      <b>tối thiểu ${t.min}g</b> · lý tưởng <b>${t.rec}–${t.max}g</b>.</div>
+    <div style="margin:12px 0 4px;font-size:13px"><span class="dot d-${av.c}"></span><b>Cả tuần:</b> ${msg}</div>
+    <h3>Đạm từng ngày</h3>${bars}
+    <div class="note">Số gram là ước tính từ khẩu phần trong thực đơn. <span class="dot d-green"></span>đủ-tốt <span class="dot d-amber"></span>thiếu <span class="dot d-red"></span>hơi nhiều cho thận</div>`;
+  const wi=document.getElementById('wInput');
+  wi.addEventListener('change',e=>{let v=Math.max(30,Math.min(150,+e.target.value||56));setWeight(v);});
+}
 function getMenu(){try{return JSON.parse(localStorage.getItem('menu'))||DEFAULT_MENU}catch(e){return DEFAULT_MENU}}
 function renderWeekly(){
   const m=getMenu();const wrap=document.getElementById('weekly');
-  wrap.innerHTML=m.map((dd,i)=>`<div class="day">
+  wrap.innerHTML=m.map((dd,i)=>{const dp=dayProtein(dd);return `<div class="day">
     <div class="day-h" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
-      <span>${dd.day}</span><span class="sub">▾</span></div>
+      <span>${dd.day}${dp.has?` <span class="sub" style="font-weight:400">· ${dp.sum}g đạm</span>`:''}</span><span class="sub">▾</span></div>
     <div class="day-b" style="display:${i===0?'block':'none'}">
       ${dd.meals.map(me=>`<div class="meal"><div class="t">${me.t}</div>
-        <div class="d"><span class="dot d-${['green','amber','red'][me.lv||0]}"></span>${me.d}</div></div>`).join('')}
-    </div></div>`).join('');
+        <div class="d"><span class="dot d-${['green','amber','red'][me.lv||0]}"></span>${me.d}${typeof me.pg==='number'?` <span class="sub">(~${me.pg}g đạm)</span>`:''}</div></div>`).join('')}
+    </div></div>`;}).join('');
+  renderProtein(m);
   renderBalance(m);
 }
 function renderBalance(m){
@@ -513,8 +551,9 @@ const CLAUDE_PROMPT=`Bạn là chuyên gia dinh dưỡng. Hãy lên thực đơn
 - Thận eGFR 66 -> đạm vừa phải.
 Người này ăn món Việt, hay ăn sáng tiệm, hay ăn ngoài. Cân đối cả tuần đủ dinh dưỡng, đa dạng, không lặp món nhàm.
 QUAN TRỌNG: ghi RÕ TÊN món cụ thể (rau gì, cá gì) và KHẨU PHẦN (gram/chén/bát/quả), KHÔNG nói chung chung "rau" hay "cá". Ưu tiên cá nạc (cá lóc, rô, diêu hồng, chẽm, liệt), đậu hũ, ức gà, rau xanh, gạo lứt. Tránh nội tạng, hải sản vỏ, cá béo (mòi/trích/cơm/thu/ngừ), trái cây rất ngọt, đồ chiên, rượu bia.
-CHỈ trả về JSON đúng định dạng sau (không kèm chữ nào khác), lv: 0=nên ăn,1=vừa phải,2=hạn chế:
-[{"day":"Thứ 2","meals":[{"t":"Sáng","d":"...","lv":0},{"t":"Trưa","d":"...","lv":0},{"t":"Tối","d":"...","lv":0}]}, ... đủ 7 ngày tới Chủ nhật]`;
+Người này nặng ~56kg, có suy thận nhẹ nên cần đạm VỪA PHẢI ~45–67g/ngày. Mỗi bữa thêm "pg" = số gram protein ước tính của bữa đó, sao cho tổng mỗi ngày khoảng 50–67g.
+CHỈ trả về JSON đúng định dạng sau (không kèm chữ nào khác), lv: 0=nên ăn,1=vừa phải,2=hạn chế; pg=gram đạm:
+[{"day":"Thứ 2","meals":[{"t":"Sáng","d":"...","lv":0,"pg":15},{"t":"Trưa","d":"...","lv":0,"pg":25},{"t":"Tối","d":"...","lv":0,"pg":22}]}, ... đủ 7 ngày tới Chủ nhật]`;
 function copyPrompt(){navigator.clipboard.writeText(CLAUDE_PROMPT).then(()=>alert('Đã sao chép! Mở Claude.ai → dán → gửi → copy JSON Claude trả về → dán vào ô bên dưới.'));}
 function applyMenu(){
   try{
