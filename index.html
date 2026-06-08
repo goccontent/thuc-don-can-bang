@@ -79,7 +79,7 @@
 <body>
 <header>
   <h1>🥗 Thực Đơn Cân Bằng</h1>
-  <p id="hdrsub">Hỗ trợ: acid uric • đường huyết • men gan • thận</p>
+  <p id="hdrsub">Nguyễn Thế Tuấn Anh • acid uric • đường • men gan • mỡ máu • thận</p>
 </header>
 
 <main>
@@ -97,14 +97,19 @@
       <h3>📋 Nguyên tắc cốt lõi cho bạn</h3>
       <div id="goals"></div>
     </div>
+    <div class="card">
+      <h3>📏 Định lượng chuẩn mỗi ngày</h3>
+      <div id="macros"></div>
+    </div>
   </section>
 
   <!-- ============ THỰC ĐƠN ============ -->
   <section id="menu" class="page">
     <div class="card">
       <h2>📅 Thực đơn 7 ngày</h2>
-      <p class="sub">Đã cân đối: đạm vừa phải • ít purin • ít đường nhanh • nhiều rau. <span class="dot d-green"></span>nên ăn <span class="dot d-amber"></span>vừa phải <span class="dot d-red"></span>hạn chế</p>
+      <p class="sub">Sáng cố định • <b>Trưa = Tối</b> (nấu 1 lần chia 2 hộp, tiết kiệm thời gian) • có bữa phụ 15:00. <span class="dot d-green"></span>nên ăn <span class="dot d-amber"></span>vừa phải <span class="dot d-red"></span>hạn chế</p>
     </div>
+    <div class="card" id="emergencyCard"></div>
     <div class="card" id="proteinCard"></div>
     <div id="weekly"></div>
     <div class="card">
@@ -149,9 +154,16 @@
   <!-- ============ NƯỚC + LÀM MỚI ============ -->
   <section id="more" class="page">
     <div class="card">
+      <h2>⏰ Nhịp sinh học hôm nay</h2>
+      <p class="sub">Đánh dấu khi hoàn thành. Nhịn ăn 12:12 — ăn trong khung 07:00–19:00.</p>
+      <div id="rhythm"></div>
+    </div>
+    <div class="card">
       <h2>💧 Nước hôm nay (mục tiêu 2–2.5L)</h2>
-      <p class="sub">Uống đủ nước giúp thải acid uric & hỗ trợ thận. Bấm vào ly khi uống xong.</p>
+      <div id="drinkToday" class="note" style="margin-top:0"></div>
+      <p class="sub" style="margin-top:8px">Bấm vào ly khi uống xong (mỗi ly ~250ml).</p>
       <div class="water" id="water"></div>
+      <div class="note">⚠️ KHÔNG uống ực 500ml/lần. Chia nhỏ <b>100–150ml mỗi 30–45 phút</b> để thận không quá tải.</div>
     </div>
     <div class="card">
       <h2>✨ Làm mới thực đơn bằng Claude</h2>
@@ -181,24 +193,27 @@
 
 <script>
 /* ============================================================
-   HỒ SƠ NGƯỜI DÙNG (suy ra từ xét nghiệm 03/06/2026)
-   Acid uric 520↑ | Glucose 6.38↑ | GGT 112↑ | Creatinine 111↑ eGFR66
-   => 4 trục: purin↓, đường nhanh↓, gan(rượu/béo)↓, đạm vừa
+   HỒ SƠ: Nguyễn Thế Tuấn Anh (1981, Nam) — XN Pasteur Nha Trang 03/06/2026
+   Acid uric 520↑ | GGT 112↑ | Glucose 6.38↑ | Cholesterol 6.04↑ | Creatinine 111↑
+   => 5 trục: purin↓, gan(rượu/béo)↓, đường nhanh↓, cholesterol↓, đạm vừa
    ============================================================ */
 
-/* Mỗi món gắn 4 cờ mức 0(thấp)–2(cao): purin, sugar, fat, protein
+/* Mỗi món gắn cờ mức 0(thấp)–2(cao): p=purin, s=sugar, f=fat, c=cholesterol, pr=protein
    verdict tính từ cờ cao nhất so với các trục cần kiêng. */
 const FOODS = [
   // ===== ĐẠM ĐỘNG VẬT (THỊT) =====
-  {n:"lòng heo",a:["lòng","nội tạng heo","phá lấu"],p:2,s:0,f:2,pr:2,g:"đạm",d:"Nên TRÁNH hẳn — nội tạng purin rất cao"},
-  {n:"gan (gan heo, gan gà)",a:["gan heo","gan gà","pate gan"],p:2,s:0,f:1,pr:2,g:"đạm",d:"Nên TRÁNH — gan purin rất cao"},
-  {n:"dồi, tiết canh, huyết",a:["dồi","tiết canh","huyết"],p:2,s:0,f:1,pr:2,g:"đạm",d:"Nên TRÁNH (cả lý do an toàn vệ sinh)"},
+  {n:"lòng heo",a:["lòng","nội tạng heo","phá lấu"],p:2,s:0,f:2,c:2,pr:2,g:"đạm",d:"Nên TRÁNH hẳn — nội tạng purin & cholesterol rất cao"},
+  {n:"gan (gan heo, gan gà)",a:["gan heo","gan gà","pate gan"],p:2,s:0,f:1,c:2,pr:2,g:"đạm",d:"Nên TRÁNH — gan purin & cholesterol rất cao"},
+  {n:"dồi, tiết canh, huyết",a:["dồi","tiết canh","huyết"],p:2,s:0,f:1,c:2,pr:2,g:"đạm",d:"Nên TRÁNH (cả lý do an toàn vệ sinh)"},
   {n:"thịt bò",a:["bò","bắp bò","thịt đỏ"],p:2,s:0,f:1,pr:2,g:"đạm",d:"Giai đoạn này hạn chế: ≤100g, ≤1 lần/tuần"},
   {n:"thịt dê",a:["dê"],p:2,s:0,f:1,pr:2,g:"đạm",d:"Hạn chế: ≤1 lần/tuần"},
-  {n:"thịt heo nạc",a:["heo","thịt lợn","ba chỉ","sườn","nạc"],p:1,s:0,f:1,pr:2,g:"đạm",d:"≤80–100g/bữa, 2–3 bữa/tuần; chọn nạc, bỏ mỡ/da"},
-  {n:"thịt gà (bỏ da)",a:["gà","ức gà","đùi gà","gà luộc"],p:1,s:0,f:0,pr:2,g:"đạm",d:"100–120g/bữa (1 miếng ức), 3–4 bữa/tuần; bỏ da"},
+  {n:"thịt heo nạc",a:["heo","thịt lợn","ba chỉ","sườn","nạc"],p:1,s:0,f:1,c:1,pr:2,g:"đạm",d:"≤80–100g/bữa, 2–3 bữa/tuần; chọn nạc, BỎ mỡ/da. Nếu cuốn bánh tráng thịt nạc: 4–6 cuốn/ngày là HẾT quota đạm"},
+  {n:"mỡ heo, da gà, da heo",a:["mỡ heo","mỡ lợn","da gà","da heo","tóp mỡ"],p:1,s:0,f:2,c:2,pr:1,g:"đạm",d:"TRÁNH hẳn — mỡ động vật làm tăng cholesterol (6.04) & gánh nặng gan"},
+  {n:"ức gà bỏ da",a:["ức gà","gà luộc","gà hấp"],p:1,s:0,f:0,c:0,pr:2,g:"đạm",d:"100–120g/bữa (1 miếng ức), 3–4 bữa/tuần; luộc/hấp/áp chảo — nguồn đạm nạc tốt"},
+  {n:"đùi gà (bỏ da)",a:["đùi gà","gà"],p:1,s:0,f:1,c:1,pr:2,g:"đạm",d:"Chỉ 1–2 lần/tuần đổi vị; BẮT BUỘC bỏ da & mỡ, chỉ luộc/hấp"},
   {n:"vịt, ngan",a:["vịt","ngan"],p:1,s:0,f:1,pr:2,g:"đạm",d:"≤100g, 1–2 bữa/tuần; bỏ da"},
-  {n:"trứng gà",a:["trứng","hột gà","trứng vịt","trứng cút"],p:0,s:0,f:1,pr:1,g:"đạm",d:"1 quả/ngày (≈6–7 quả/tuần); purin RẤT thấp — nguồn đạm tốt"},
+  {n:"lòng trắng trứng gà",a:["lòng trắng","trắng trứng","egg white"],p:0,s:0,f:0,c:0,pr:1,g:"đạm",d:"TỐI ĐA 4 lòng trắng/ngày — đạm sạch, 0 cholesterol, rất hợp với bạn"},
+  {n:"lòng đỏ trứng / trứng nguyên quả",a:["trứng","lòng đỏ","đỏ trứng","hột gà","trứng vịt","trứng cút","trứng ốp","trứng chiên","trứng luộc"],p:0,s:0,f:1,c:2,pr:1,g:"đạm",d:"TRÁNH lòng đỏ giai đoạn này — cholesterol đang 6.04; 0 cái/tuần đến khi chỉ số về bình thường. Chỉ ăn lòng TRẮNG"},
   // ===== CÁ NƯỚC NGỌT =====
   {n:"cá lóc (cá quả)",a:["cá lóc","cá quả","cá chuối"],p:1,s:0,f:0,pr:2,g:"cá-ngọt",d:"100–150g/bữa, 2–3 bữa/tuần — cá nạc tốt"},
   {n:"cá rô đồng",a:["cá rô"],p:1,s:0,f:0,pr:2,g:"cá-ngọt",d:"100–150g/bữa, 2–3 bữa/tuần"},
@@ -236,10 +251,10 @@ const FOODS = [
   {n:"cá khô, mắm cá",a:["cá khô","khô cá","mắm","khô"],p:2,s:0,f:1,pr:2,g:"cá-mặn",d:"Hạn chế — cô đặc purin & rất mặn (hại thận)"},
   {n:"cá (loại khác)",a:["cá"],p:1,s:0,f:0,pr:2,g:"cá-mặn",d:"Cá nạc 100–150g/bữa, 2–3 bữa/tuần; nếu là cá béo (mòi/trích/cơm/thu/ngừ) thì hạn chế"},
   // ===== HẢI SẢN VỎ =====
-  {n:"tôm, tép",a:["tôm","tép"],p:2,s:0,f:0,pr:2,g:"đạm",d:"Hạn chế khi acid uric cao: thỉnh thoảng ≤50g"},
-  {n:"cua, ghẹ",a:["cua","ghẹ"],p:2,s:0,f:0,pr:2,g:"đạm",d:"Hạn chế: thỉnh thoảng, phần nhỏ"},
-  {n:"sò, ốc, nghêu, hàu",a:["sò","ốc","nghêu","hàu","hải sản vỏ"],p:2,s:0,f:0,pr:2,g:"đạm",d:"Hạn chế — purin cao"},
-  {n:"mực, bạch tuộc",a:["mực","bạch tuộc"],p:2,s:0,f:0,pr:2,g:"đạm",d:"Hạn chế — purin cao"},
+  {n:"tôm, tép",a:["tôm","tép"],p:2,s:0,f:0,c:1,pr:2,g:"đạm",d:"Hạn chế khi acid uric cao: thỉnh thoảng ≤50g"},
+  {n:"cua, ghẹ",a:["cua","ghẹ"],p:2,s:0,f:0,c:1,pr:2,g:"đạm",d:"Hạn chế: thỉnh thoảng, phần nhỏ"},
+  {n:"sò, ốc, nghêu, hàu",a:["sò","ốc","nghêu","hàu","hải sản vỏ"],p:2,s:0,f:0,c:1,pr:2,g:"đạm",d:"Hạn chế — purin cao"},
+  {n:"mực, bạch tuộc",a:["mực","bạch tuộc"],p:2,s:0,f:0,c:2,pr:2,g:"đạm",d:"Hạn chế — purin & cholesterol cao"},
   // ===== ĐẠM THỰC VẬT =====
   {n:"đậu hũ (đậu phụ)",a:["đậu hũ","đậu phụ","tàu hũ"],p:0,s:0,f:0,pr:1,g:"đạm-tv",d:"1–2 miếng (~150g)/bữa, ăn THƯỜNG XUYÊN được — đạm tốt thay thịt"},
   {n:"đậu nành, sữa đậu nành",a:["đậu nành","sữa đậu nành","đậu tương"],p:0,s:0,f:0,pr:1,g:"đạm-tv",d:"1 ly sữa không đường/ngày; purin thực vật không làm tăng gout"},
@@ -264,7 +279,9 @@ const FOODS = [
   {n:"bún, phở, hủ tiếu (sợi)",a:["bún","phở","hủ tiếu","bánh phở","mì"],p:0,s:2,f:0,pr:0,g:"bột",d:"1 vắt vừa; ăn kèm nhiều rau & đạm để giảm tăng đường"},
   {n:"bánh mì trắng",a:["bánh mì","bánh mỳ"],p:0,s:2,f:0,pr:0,g:"bột",d:"Hạn chế; chọn bánh mì đen/nguyên cám"},
   {n:"bánh mì đen / nguyên cám",a:["bánh mì đen","nguyên cám","yến mạch bánh"],p:0,s:1,f:0,pr:0,g:"bột",d:"1 ổ nhỏ; tốt hơn bánh mì trắng"},
-  {n:"khoai lang",a:["khoai lang"],p:0,s:1,f:0,pr:0,g:"bột",d:"1 củ nhỏ (~150g) THAY cơm, không ăn thêm cơm"},
+  {n:"khoai lang (trắng/tím)",a:["khoai lang","khoai lang tím","khoai lang trắng"],p:0,s:1,f:0,pr:0,g:"bột",d:"TỐT NHẤT — 1 củ nhỏ (~150g) THAY cơm, không ăn thêm cơm. Nền tảng bữa sáng & các bữa chính"},
+  {n:"khoai mỡ",a:["khoai mỡ"],p:0,s:1,f:0,pr:0,g:"bột",d:"Phần nhỏ THAY cơm — carb chậm, nấu canh/luộc"},
+  {n:"khoai sọ",a:["khoai sọ","khoai môn nhỏ"],p:0,s:1,f:0,pr:0,g:"bột",d:"Tối đa 3–4 củ nhỏ/bữa (tránh tăng đường); THAY cơm"},
   {n:"yến mạch",a:["yến mạch","oat","oatmeal"],p:0,s:0,f:0,pr:0,g:"bột",d:"40–50g khô/bữa sáng — rất tốt cho đường & mỡ máu"},
   // ===== RAU LÁ & RAU CỦ QUẢ (không tinh bột) =====
   {n:"rau muống",a:["rau muống"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái 1–2 bát/bữa; ưu tiên luộc"},
@@ -282,7 +299,8 @@ const FOODS = [
   {n:"dưa leo (dưa chuột)",a:["dưa leo","dưa chuột"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái; mát, ít calo"},
   {n:"cà chua",a:["cà chua"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái"},
   {n:"cà tím",a:["cà tím","cà dái dê"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái; nướng/hấp, tránh chiên ngập dầu"},
-  {n:"đậu bắp",a:["đậu bắp","mướp tây"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái; tốt cho đường huyết"},
+  {n:"đậu bắp",a:["đậu bắp","mướp tây"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái; RẤT tốt cho men gan (GGT) & đường huyết — nên ăn hằng ngày"},
+  {n:"khổ qua (mướp đắng)",a:["khổ qua","mướp đắng"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái; rất tốt hạ đường huyết (glucose 6.38) — luộc/nhồi đậu hũ, tránh nhồi thịt mỡ"},
   {n:"su su, su hào",a:["su su","su hào"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái, luộc/xào ít dầu"},
   {n:"củ cải trắng",a:["củ cải trắng","củ cải"],p:0,s:0,f:0,pr:0,g:"rau",d:"Thoải mái; lợi tiểu"},
   {n:"cà rốt",a:["cà rốt"],p:0,s:1,f:0,pr:0,g:"rau",d:"Vừa phải; ngọt nhẹ — không ăn quá nhiều"},
@@ -328,11 +346,17 @@ const FOODS = [
   {n:"rượu",a:["rượu","whisky","vang","rượu trắng","rượu vang"],p:1,s:1,f:0,pr:0,g:"uống",d:"KIÊNG giai đoạn này (men gan cao)"},
   {n:"nước ngọt có ga",a:["nước ngọt","coca","pepsi","soda","sting","nước có ga"],p:1,s:2,f:0,pr:0,g:"uống",d:"TRÁNH — đường & fructose tăng acid uric + đường huyết"},
   {n:"trà sữa, sinh tố ngọt, nước mía",a:["trà sữa","sinh tố","nước mía"],p:0,s:2,f:1,pr:0,g:"uống",d:"TRÁNH — rất nhiều đường"},
-  {n:"cà phê / trà không đường",a:["cà phê","trà","trà xanh"],p:0,s:0,f:0,pr:0,g:"uống",d:"1–2 ly/ngày KHÔNG đường; cà phê có thể giúp giảm acid uric"},
-  {n:"nước lọc",a:["nước lọc","nước","nước khoáng"],p:0,s:0,f:0,pr:0,g:"uống",d:"2–2.5 L/ngày — quan trọng để thải acid uric & đỡ thận"},
+  {n:"cà phê đen / trà không đường",a:["cà phê đen","cà phê","trà","trà xanh"],p:0,s:0,f:0,pr:0,g:"uống",d:"1–2 ly/ngày KHÔNG đường; cà phê ĐEN có thể giúp giảm acid uric"},
+  {n:"cà phê sữa đá",a:["cà phê sữa","bạc xỉu","sữa đá"],p:0,s:2,f:1,c:1,pr:0,g:"uống",d:"TRÁNH — nhiều đường & sữa đặc; hại đường huyết và mỡ máu"},
+  {n:"nước lá tía tô",a:["tía tô","nước tía tô","lá tía tô"],p:0,s:0,f:0,pr:0,g:"uống",d:"Đun 1.5L với 50–100g lá. Uống thay nước lọc — hỗ trợ HẠ acid uric (520). Luân phiên với nước đậu đen"},
+  {n:"nước đậu đen rang",a:["đậu đen rang","nước đậu đen","đậu đen"],p:0,s:0,f:0,pr:0,g:"uống",d:"Đun 1.5L với 50g đậu rang, bỏ hạt uống nước. MÁT GAN; luân phiên 2 ngày đổi với nước tía tô"},
+  {n:"nước chanh ấm buổi sáng",a:["nước chanh","chanh ấm","chanh"],p:0,s:0,f:0,pr:0,g:"uống",d:"Sáng ngủ dậy: nước ấm pha 1/4 quả chanh, KHÔNG đường KHÔNG muối. (TUYỆT ĐỐI không pha muối — hại thận)"},
+  {n:"sữa đậu nành tự nấu",a:["sữa đậu nành","đậu nành nấu"],p:0,s:0,f:0,pr:1,g:"uống",d:"Tối đa 200–250ml/ngày, lọc sạch bã, 0 đường"},
+  {n:"sữa bò nguyên kem / ngũ cốc 3in1",a:["sữa bò","sữa nguyên kem","3in1","ngũ cốc pha sẵn","milo","ovaltine"],p:0,s:2,f:2,c:2,pr:1,g:"uống",d:"TRÁNH — nhiều đường & chất béo bão hòa (cholesterol 6.04)"},
+  {n:"nước lọc",a:["nước lọc","nước","nước khoáng"],p:0,s:0,f:0,pr:0,g:"uống",d:"2–2.5 L/ngày, chia nhỏ 100–150ml mỗi 30–45 phút (KHÔNG uống ực 500ml/lần) — thải acid uric & đỡ thận"},
   // ===== ĐỒ NGỌT / BÉO =====
   {n:"bánh ngọt, kẹo, chè, kem",a:["bánh ngọt","kẹo","chè","bánh kem","kem","bánh"],p:0,s:2,f:1,pr:0,g:"ngọt",d:"TRÁNH — đường nhanh, hại đường huyết"},
-  {n:"đồ chiên rán (gà rán, khoai chiên)",a:["chiên","gà rán","khoai chiên","quẩy","đồ rán","chiên giòn"],p:1,s:0,f:2,pr:1,g:"béo",d:"Hạn chế — nhiều dầu, gánh nặng cho gan (GGT)"},
+  {n:"đồ chiên rán (gà rán, khoai chiên)",a:["chiên","gà rán","khoai chiên","quẩy","đồ rán","chiên giòn","chiên ngập dầu","xào nhiều mỡ"],p:1,s:0,f:2,c:2,pr:1,g:"béo",d:"Hạn chế — nhiều dầu, tăng cholesterol (6.04) & gánh nặng gan (GGT 112). Chỉ luộc/hấp/áp chảo"},
 ];
 
 /* tính verdict dựa trên hồ sơ: kiêng purin & sugar & fat (rượu), đạm vừa */
@@ -343,8 +367,10 @@ function judge(food){
   else if(food.p===1){up(1);reasons.push("Purin vừa → ăn ít, không thường xuyên");}
   if(food.s>=2){up(2);reasons.push("Đường/tinh bột nhanh CAO → glucose đang 6.38 (tiền tiểu đường)");}
   else if(food.s===1){up(1);reasons.push("Có đường → ăn lượng vừa phải");}
-  if(food.f>=2){up(2);reasons.push("Nhiều dầu mỡ → gánh nặng cho gan (GGT 112) & mỡ máu");}
+  if(food.f>=2){up(2);reasons.push("Nhiều dầu mỡ → gánh nặng cho gan (GGT 112)");}
   else if(food.f===1){reasons.push("Hơi béo → nên luộc/hấp/kho thay vì chiên");}
+  if(food.c>=2){up(2);reasons.push("Cholesterol/mỡ máu CAO → cholesterol đang 6.04 (cận cao), hạn chế chất béo động vật");}
+  else if(food.c===1){up(1);reasons.push("Có cholesterol → ăn lượng vừa, ưu tiên đạm nạc/thực vật");}
   if(food.g==="uống"&&food.n.match(/bia|rượu/)){level=2;reasons.length=0;reasons.push("RƯỢU BIA → nguyên nhân chính làm GGT cao. Giai đoạn này nên KIÊNG hẳn");}
   if(food.pr>=2 && level<2){reasons.push("Đạm cao → thận eGFR 66, chỉ nên 1 phần vừa/bữa");}
   return {level,reasons};
@@ -363,7 +389,7 @@ function findFood(qraw){
       else if(q.includes(al))sc=Math.max(sc,40+al.length);            // alias dài hơn = sát hơn
       else if(al.includes(q))sc=Math.max(sc,30+q.length);
     }
-    if(name.includes(q))sc=Math.max(sc,20+q.length);
+    if(name.includes(q))sc=Math.max(sc,60+q.length);  // tên món chứa trọn câu hỏi = tín hiệu mạnh (đủ vượt khớp 1 từ alias khi câu dài)
     if(sc>bestScore){bestScore=sc;best=f;}
   }
   return bestScore>0?best:null;
@@ -383,49 +409,59 @@ document.getElementById('q').addEventListener('input',e=>{
   renderVerdict(findFood(e.target.value));
 });
 // chips gợi ý nhanh
-const QUICK=["trứng gà","cá liệt","cá thu","cá hồi","hạnh nhân","măng","sầu riêng","bưởi","đậu hũ","tôm","lòng heo","bia"];
+const QUICK=["lòng trắng trứng","lòng đỏ trứng","khổ qua","cá liệt","cá hồi","tía tô","đậu đen rang","khoai lang","đậu hũ","tôm","lòng heo","bia"];
 document.getElementById('suggchips').innerHTML=QUICK.map(c=>`<span class="chip" onclick="document.getElementById('q').value='${c}';renderVerdict(findFood('${c}'))">${c}</span>`).join('');
 
 /* ===== GOALS ===== */
 const GOALS=[
-  {ic:"🔴",t:"Hạ Acid Uric (520)",d:"Tránh nội tạng, thịt đỏ nhiều, hải sản vỏ, nước hầm xương, bia. Uống ≥2L nước."},
-  {ic:"🟠",t:"Kiểm soát đường (6.38)",d:"Giảm cơm trắng/bánh ngọt/nước ngọt. Ưu tiên gạo lứt, rau, ăn rau trước cơm."},
-  {ic:"🔴",t:"Hạ men gan GGT (112)",d:"KIÊNG rượu bia, giảm đồ chiên rán & dầu mỡ. Ngủ đủ, vận động."},
-  {ic:"🟠",t:"Bảo vệ thận (eGFR 66)",d:"Đạm vừa phải (~1 phần/bữa), không lạm dụng thực phẩm chức năng/đạm bột."},
+  {ic:"🔴",t:"Hạ Acid Uric (520 µmol/L)",d:"Tránh nội tạng, thịt đỏ nhiều, hải sản vỏ, nước hầm xương, bia. Uống ≥2L nước (tía tô/đậu đen)."},
+  {ic:"🔴",t:"Hạ men gan GGT (112 UI/L)",d:"KIÊNG rượu bia, giảm đồ chiên rán & dầu mỡ. Ngủ trước 22:30, vận động."},
+  {ic:"🟠",t:"Kiểm soát đường (Glucose 6.38)",d:"Giảm cơm trắng/bánh ngọt/nước ngọt. Ưu tiên gạo lứt, khoai lang, rau; ăn rau TRƯỚC cơm."},
+  {ic:"🟠",t:"Hạ mỡ máu (Cholesterol 6.04)",d:"Bỏ mỡ động vật & lòng đỏ trứng. Dầu ô liu ≤1 thìa/ngày. Thêm bơ, hạnh nhân, óc chó, cá omega-3."},
+  {ic:"🟠",t:"Bảo vệ thận (Creatinine 111)",d:"Đạm VỪA PHẢI (150–200g thịt/cá sống/ngày tối đa), không lạm dụng thực phẩm chức năng/đạm bột."},
 ];
 document.getElementById('goals').innerHTML=GOALS.map(g=>
   `<div class="goal"><div class="ic">${g.ic}</div><div><b>${g.t}</b><span>${g.d}</span></div></div>`).join('');
 
+/* ===== ĐỊNH LƯỢNG CHUẨN / NGÀY ===== */
+const MACROS=[
+  {ic:"🥩",t:"Đạm (thịt/cá)",d:"TỐI ĐA 150–200g sống/ngày — tránh quá tải thận"},
+  {ic:"🥬",t:"Rau xanh",d:"300–400g/ngày — bắt buộc, giải độc gan & cản đường"},
+  {ic:"💧",t:"Nước",d:"2.0–2.5 L/ngày — bắt buộc để thải acid uric"},
+  {ic:"🫒",t:"Chất béo",d:"TỐI ĐA 1 thìa canh (15ml) dầu ô liu/ngày. KHÔNG mỡ động vật"},
+  {ic:"⏰",t:"Khung giờ ăn 12:12",d:"Ăn từ 07:00, kết thúc mọi bữa TRƯỚC 19:00. Ngủ trước 22:30"},
+];
+document.getElementById('macros').innerHTML=MACROS.map(g=>
+  `<div class="goal"><div class="ic">${g.ic}</div><div><b>${g.t}</b><span>${g.d}</span></div></div>`).join('');
+
 /* ============ THỰC ĐƠN MẪU (cân đối tuần) ============ */
+/* Nguyên tắc Feature 1: Sáng cố định • TRƯA = TỐI (nấu 1 lần chia 2 hộp) • có bữa phụ 15:00 */
+const BREAKFAST={t:"Sáng 07:00",d:"1 củ khoai lang luộc + 2 lòng TRẮNG trứng luộc + 1 ly nước ấm pha ¼ chanh",lv:0,pg:9};
+function lunchDinner(main,pg,lv){return [
+  {t:"Trưa",d:main,lv:lv||0,pg},
+  {t:"Tối (=trưa)",d:main,lv:lv||0,pg}];}
 const DEFAULT_MENU=[
- {day:"Thứ 2",meals:[
-   {t:"Sáng",d:"Yến mạch (40g) + 1 trứng gà luộc + 1 quả ổi nhỏ",lv:0,pg:12},
-   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + cá lóc kho lạt (120g) + rau muống luộc (1 bát) + canh bí đao",lv:0,pg:34},
-   {t:"Tối",d:"Cơm gạo lứt (lưng chén) + ức gà áp chảo (100g) + bông cải xanh luộc (1 bát)",lv:0,pg:36}]},
- {day:"Thứ 3",meals:[
-   {t:"Sáng",d:"Phở gà (1 tô, xin ít bánh, nhiều rau, không húp nước béo)",lv:1,pg:18},
-   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + đậu hũ sốt cà (2 miếng) + cải ngọt luộc (1 bát)",lv:0,pg:23},
-   {t:"Tối",d:"Cá diêu hồng hấp gừng (150g) + canh cải bẹ xanh + khoai lang luộc (1 củ nhỏ)",lv:0,pg:34}]},
- {day:"Thứ 4",meals:[
-   {t:"Sáng",d:"Bánh mì đen (1 ổ) + 1 trứng ốp ít dầu + dưa leo + 1 ly sữa đậu nành",lv:1,pg:21},
-   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + thịt heo nạc luộc (80g) + canh mồng tơi + cà chua",lv:0,pg:24},
-   {t:"Tối",d:"Đậu hũ hấp (2 miếng) + cải thìa xào tỏi ít dầu (1 bát) + 1 quả táo",lv:0,pg:18}]},
- {day:"Thứ 5",meals:[
-   {t:"Sáng",d:"Yến mạch (40g) + sữa đậu nành không đường + 1 nắm hạnh nhân (~25g)",lv:0,pg:18},
-   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + cá rô đồng kho (120g) + rau lang luộc (1 bát)",lv:0,pg:34},
-   {t:"Tối",d:"Ức gà nướng (100g) + salad xà lách-cà chua (dầu ô liu) + bí xanh luộc",lv:0,pg:34}]},
- {day:"Thứ 6",meals:[
-   {t:"Sáng",d:"Bún cá lóc (1 tô, ít bún, nhiều rau)",lv:1,pg:20},
-   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + đậu hũ kho (2 miếng) + canh chua cá basa (100g cá) + 1 múi bưởi",lv:1,pg:40},
-   {t:"Tối",d:"Cá chẽm hấp (150g) + rau muống luộc (1 bát) + ½ củ khoai lang",lv:0,pg:35}]},
- {day:"Thứ 7",meals:[
-   {t:"Sáng",d:"2 trứng gà luộc + bánh mì đen + cà chua",lv:0,pg:20},
-   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + gà kho gừng (100g, bỏ da) + cải xanh luộc (1 bát)",lv:0,pg:38},
-   {t:"Tối",d:"NẾU đi nhậu: gà nướng/cá nướng (1 phần) + nhiều rau sống, NƯỚC LỌC thay bia",lv:1,pg:25}]},
- {day:"Chủ nhật",meals:[
-   {t:"Sáng",d:"Yến mạch (40g) + ½ quả chuối + 1 nắm óc chó (~25g)",lv:0,pg:11},
-   {t:"Trưa",d:"Cơm gạo lứt (1 chén) + cá trắm kho (120g) + canh cải + đậu hũ (1 miếng)",lv:0,pg:39},
-   {t:"Tối",d:"Lẩu rau (nước nấm/rau, KHÔNG hầm xương) + cá diêu hồng (150g) + nhiều rau + đậu hũ",lv:1,pg:34}]},
+ {day:"Thứ 2",meals:[BREAKFAST,
+   ...lunchDinner("½ chén cơm gạo lứt + cá lóc hấp (130g) + 1 dĩa rau muống luộc lớn",25),
+   {t:"Phụ 15:00",d:"1 hộp sữa chua không đường",lv:0,pg:5}]},
+ {day:"Thứ 3",meals:[BREAKFAST,
+   ...lunchDinner("1 củ khoai lang + ức gà áp chảo bỏ da (110g) + bông cải xanh luộc",24),
+   {t:"Phụ 15:00",d:"1 nắm hạnh nhân (~30g)",lv:0,pg:6}]},
+ {day:"Thứ 4",meals:[BREAKFAST,
+   ...lunchDinner("½ chén cơm gạo lứt + đậu hũ hấp (2 miếng ~150g) + khổ qua luộc + canh bí đao",16),
+   {t:"Phụ 15:00",d:"½ quả ổi",lv:0,pg:1}]},
+ {day:"Thứ 5",meals:[BREAKFAST,
+   ...lunchDinner("1 củ khoai lang + cá diêu hồng hấp gừng (130g) + rau lang luộc",25),
+   {t:"Phụ 15:00",d:"1 hộp sữa chua không đường",lv:0,pg:5}]},
+ {day:"Thứ 6",meals:[BREAKFAST,
+   ...lunchDinner("½ chén cơm gạo lứt + cá chẽm hấp (130g) + cải thìa luộc + canh mồng tơi",25),
+   {t:"Phụ 15:00",d:"1 nắm óc chó (~30g)",lv:0,pg:5}]},
+ {day:"Thứ 7",meals:[BREAKFAST,
+   ...lunchDinner("1 củ khoai lang + ức gà luộc (110g) + súp lơ luộc + canh cải",24),
+   {t:"Phụ 15:00",d:"Vài múi bưởi",lv:0,pg:1}]},
+ {day:"Chủ nhật",meals:[BREAKFAST,
+   ...lunchDinner("½ chén cơm gạo lứt + cá liệt nấu canh ngót (130g) + 1 dĩa rau luộc lớn",25),
+   {t:"Phụ 15:00",d:"½ quả bơ dầm (không sữa/đường)",lv:0,pg:2}]},
 ];
 /* ===== PROTEIN: mục tiêu theo cân nặng (thận nhẹ → đạm vừa phải) ===== */
 function getWeight(){return +(localStorage.getItem('weight')||56);}
@@ -473,6 +509,7 @@ function renderWeekly(){
       ${dd.meals.map(me=>`<div class="meal"><div class="t">${me.t}</div>
         <div class="d"><span class="dot d-${['green','amber','red'][me.lv||0]}"></span>${me.d}${typeof me.pg==='number'?` <span class="sub">(~${me.pg}g đạm)</span>`:''}</div></div>`).join('')}
     </div></div>`;}).join('');
+  renderEmergency();
   renderProtein(m);
   renderBalance(m);
 }
@@ -500,11 +537,37 @@ function renderBalance(m){
   `<div class="note">${redmeat<=2&&fried<=2?'✅ Tuần cân đối tốt: nhiều rau & đạm lành, ít thịt đỏ và đồ chiên.':'⚠️ Còn nhiều món cần hạn chế — cân nhắc đổi bớt.'}</div>`;
 }
 
+/* ============ FEATURE 2: CHỮA CHÁY (Emergency Rules) ============ */
+function emgKey(){return 'emg_'+new Date().toDateString();}
+function isEmg(){return localStorage.getItem(emgKey())==='1';}
+function toggleEmg(){localStorage.setItem(emgKey(),isEmg()?'0':'1');renderEmergency();}
+function renderEmergency(){
+  const on=isEmg();
+  const box=document.getElementById('emergencyCard');
+  if(!on){
+    box.innerHTML=`<h2>🚨 Chữa cháy đạm</h2>
+      <p class="sub">Lỡ ăn quá nhiều đạm bữa trưa (≥150g thịt/cá, hoặc nhậu, hoặc 4–6 cuốn bánh tráng thịt)? Bấm nút để cân bằng lại buổi tối.</p>
+      <button class="act" onclick="toggleEmg()">⚠️ Trưa nay tôi đã ăn quá nhiều đạm</button>`;
+    return;
+  }
+  box.innerHTML=`<h2>🚨 Đang ở chế độ Chữa cháy</h2>
+    <div class="verdict show v-red" style="margin-top:8px">
+      <div class="big">⛔ Đã đạt/quá quota đạm hôm nay</div>
+      <ul>
+        <li>Bữa TỐI chuyển sang <b>ĂN CHAY HOÀN TOÀN</b> để giảm tải thận & cân bằng acid uric.</li>
+        <li>Gợi ý tối: <b>1 củ khoai lang luộc + 1 dĩa rau luộc lớn + 1 bìa đậu hũ hấp</b> (hoặc 2 lòng trắng trứng).</li>
+        <li>💧 Uống thêm <b>2–3 ly nước</b> (tía tô/đậu đen) để hỗ trợ đào thải acid uric.</li>
+        <li>Không thêm thịt/cá/hải sản nào nữa trong hôm nay.</li>
+      </ul>
+    </div>
+    <button class="act ghost" style="margin-top:10px" onclick="toggleEmg()">↩️ Bỏ chế độ chữa cháy (đặt lại)</button>`;
+}
+
 /* ============ ĐI CHỢ ============ */
 const SHOP={
- "🟢 Nên mua nhiều":["Rau lá: cải, mồng tơi, rau muống, rau lang, bí xanh, bầu","Cá nạc nước ngọt: cá lóc, rô, diêu hồng, basa","Cá nạc biển/lợ: cá liệt, cá chẽm, cá đối, cá mú","Đậu hũ, sữa đậu nành không đường","Ức gà / đùi gà (bỏ da)","Trứng gà","Gạo lứt, yến mạch","Hạt: hạnh nhân, óc chó, hạt điều, hạt bí (không muối)","Trái cây ít ngọt: ổi, bưởi, táo, thanh long, bơ"],
- "🟠 Mua vừa, dùng ít":["Thịt heo nạc","Cá hồi (1–2 lần/tuần)","Khoai lang, khoai tây, bắp (thay cơm)","Bún/phở (lượng nhỏ)","Chuối, cam (1 phần/ngày)"],
- "🔴 Hạn chế / tránh":["Bia, rượu","Nội tạng: lòng, gan, dồi, tiết canh","Thịt bò/dê (nhiều)","Hải sản vỏ: tôm, cua, sò, ốc, mực","Cá béo: cá mòi, trích, cơm, nục, thu, ngừ","Cá khô, mắm (mặn + purin cao)","Trái cây rất ngọt: sầu riêng, xoài, nhãn, vải, mít, nho","Bánh kẹo, nước ngọt, trà sữa","Đồ chiên sẵn","Xương để hầm nước lẩu"],
+ "🟢 Nên mua nhiều":["Rau lá: cải ngọt, mồng tơi, rau muống, rau lang, bí xanh, bầu","Khổ qua, đậu bắp, súp lơ (tốt cho đường & gan)","Cá nạc nước ngọt: cá lóc, rô, diêu hồng, basa","Cá nạc biển/lợ: cá liệt, cá chẽm, cá đối, cá mú","Đậu hũ, đậu nành (tự nấu sữa, 0 đường)","Ức gà bỏ da","Trứng gà (chỉ dùng LÒNG TRẮNG, tối đa 4/ngày)","Khoai lang trắng/tím, khoai mỡ, gạo lứt, yến mạch","Hạt: hạnh nhân, óc chó, hạt điều, hạt bí (không muối)","Trái cây ít ngọt: ổi, bưởi, táo, thanh long, bơ","Lá tía tô + đậu đen (nấu nước uống)","Chanh tươi (pha nước ấm buổi sáng)"],
+ "🟠 Mua vừa, dùng ít":["Thịt heo nạc (bỏ mỡ/da)","Đùi gà (1–2 lần/tuần, bỏ da)","Cá hồi (1–2 lần/tuần)","Khoai sọ (3–4 củ nhỏ), bắp (thay cơm)","Cơm trắng (≤½ chén, ăn rau trước)","Chuối, cam (1 phần/ngày)","Dầu ô liu (chỉ ≤1 thìa/ngày)"],
+ "🔴 Hạn chế / tránh":["Bia, rượu","Cà phê sữa đá, nước ngọt, nước ép, trà sữa","Lòng ĐỎ trứng (0 cái/tuần)","Nội tạng: lòng, gan, dồi, tiết canh","Mỡ heo, da gà, da heo","Thịt bò/dê (nhiều)","Hải sản vỏ: tôm, cua, sò, ốc, mực","Cá béo: cá mòi, trích, cơm, nục, thu, ngừ","Cá khô, mắm (mặn + purin cao)","Trái cây rất ngọt: sầu riêng, xoài, nhãn, vải, mít, nho","Bánh kẹo, đồ chiên sẵn","Sữa bò nguyên kem, ngũ cốc 3in1","Xương để hầm nước lẩu"],
 };
 document.getElementById('shoplist').innerHTML=Object.entries(SHOP).map(([k,v])=>
   `<h3>${k}</h3>${v.map(i=>`<div style="font-size:13px;padding:4px 0;border-bottom:1px solid var(--line)">• ${i}</div>`).join('')}`).join('');
@@ -529,31 +592,65 @@ const BFAST=[
 document.getElementById('breakfast').innerHTML=BFAST.map(b=>
   `<div class="meal"><div class="d"><span class="dot d-${['green','amber','red'][b.lv]}"></span><b>${b.n}</b><br><span class="sub">${b.note}</span></div></div>`).join('');
 
-/* ============ NƯỚC ============ */
+/* ============ FEATURE 3: SMART WATER TRACKER ============ */
+const GLASS=250, NGLASS=10; // 10 ly × 250ml = 2500ml
+function renderDrinkOfDay(){
+  // luân phiên 2 ngày đổi 1 loại: tía tô / đậu đen rang
+  const day2=Math.floor(Date.now()/864e5); // số ngày từ epoch
+  const tiato = Math.floor(day2/2)%2===0;
+  document.getElementById('drinkToday').innerHTML = tiato
+    ? '🌿 <b>Hôm nay nấu: Nước lá tía tô</b> — đun 1.5L với 50–100g lá, uống nguội thay nước lọc (hỗ trợ hạ acid uric).'
+    : '⚫ <b>Hôm nay nấu: Nước đậu đen rang</b> — đun 1.5L với 50g đậu rang, bỏ hạt uống nước (mát gan).';
+}
 function renderWater(){
+  renderDrinkOfDay();
   const key='water_'+new Date().toDateString();
   let n=+(localStorage.getItem(key)||0);
   const wrap=document.getElementById('water');wrap.innerHTML='';
-  for(let i=0;i<8;i++){
-    const g=document.createElement('div');g.className='g'+(i<n?' full':'');g.textContent=i<n?'✓':(i+1)*300;
+  for(let i=0;i<NGLASS;i++){
+    const g=document.createElement('div');g.className='g'+(i<n?' full':'');g.textContent=i<n?'✓':GLASS;
     g.onclick=()=>{let cur=+(localStorage.getItem(key)||0);localStorage.setItem(key,i<cur?i:i+1);renderWater();};
     wrap.appendChild(g);
   }
   const lbl=document.createElement('div');lbl.className='sub';lbl.style.width='100%';lbl.style.marginTop='6px';
-  lbl.textContent=`Đã uống ~${n*300}ml / 2400ml`;wrap.appendChild(lbl);
+  lbl.textContent=`Đã uống ~${n*GLASS}ml / ${NGLASS*GLASS}ml`+(n>=NGLASS?' ✅ Đạt mục tiêu!':'');wrap.appendChild(lbl);
+}
+
+/* ============ FEATURE 4: NHỊP SINH HỌC ============ */
+const RHYTHM=[
+  {id:"lemon",ic:"🍋",t:"06:30 Thức dậy",d:"Uống nước ấm pha ¼ chanh (KHÔNG đường, KHÔNG muối)"},
+  {id:"start",ic:"🍽️",t:"07:00 Bắt đầu ăn",d:"Mở khung ăn 12:12 — bữa sáng cố định"},
+  {id:"move",ic:"🚶",t:"Vận động",d:"Đi bộ/tập 20–30 phút giúp hạ đường & mỡ máu"},
+  {id:"end",ic:"🌙",t:"Trước 19:00 Kết thúc ăn",d:"Không ăn gì sau 19:00 (đóng khung 12:12)"},
+  {id:"sleep",ic:"😴",t:"22:30 Đi ngủ",d:"Ngủ sớm để gan hồi phục (GGT 112)"},
+];
+function rhyKey(id){return 'rhy_'+id+'_'+new Date().toDateString();}
+function toggleRhy(id){localStorage.setItem(rhyKey(id),localStorage.getItem(rhyKey(id))==='1'?'0':'1');renderRhythm();}
+function renderRhythm(){
+  document.getElementById('rhythm').innerHTML=RHYTHM.map(r=>{
+    const done=localStorage.getItem(rhyKey(r.id))==='1';
+    return `<div class="goal" style="cursor:pointer;${done?'opacity:.55':''}" onclick="toggleRhy('${r.id}')">
+      <div class="ic">${done?'✅':r.ic}</div>
+      <div><b style="${done?'text-decoration:line-through':''}">${r.t}</b><span>${r.d}</span></div></div>`;
+  }).join('');
 }
 
 /* ============ CLAUDE PROMPT ============ */
-const CLAUDE_PROMPT=`Bạn là chuyên gia dinh dưỡng. Hãy lên thực đơn 7 ngày (món Việt) cho nam 45 tuổi với các vấn đề:
-- Acid uric cao 520 (nguy cơ gout) -> ÍT PURIN: tránh nội tạng, thịt đỏ nhiều, hải sản vỏ, nước hầm xương, bia rượu.
-- Tiền tiểu đường (glucose 6.38) -> ÍT ĐƯỜNG/TINH BỘT NHANH: ưu tiên gạo lứt, rau.
-- Men gan GGT cao 112 -> KIÊNG rượu bia, ít đồ chiên rán.
-- Thận eGFR 66 -> đạm vừa phải.
-Người này ăn món Việt, hay ăn sáng tiệm, hay ăn ngoài. Cân đối cả tuần đủ dinh dưỡng, đa dạng, không lặp món nhàm.
-QUAN TRỌNG: ghi RÕ TÊN món cụ thể (rau gì, cá gì) và KHẨU PHẦN (gram/chén/bát/quả), KHÔNG nói chung chung "rau" hay "cá". Ưu tiên cá nạc (cá lóc, rô, diêu hồng, chẽm, liệt), đậu hũ, ức gà, rau xanh, gạo lứt. Tránh nội tạng, hải sản vỏ, cá béo (mòi/trích/cơm/thu/ngừ), trái cây rất ngọt, đồ chiên, rượu bia.
-Người này nặng ~56kg, có suy thận nhẹ nên cần đạm VỪA PHẢI ~45–67g/ngày. Mỗi bữa thêm "pg" = số gram protein ước tính của bữa đó, sao cho tổng mỗi ngày khoảng 50–67g.
+const CLAUDE_PROMPT=`Bạn là chuyên gia dinh dưỡng. Hãy lên thực đơn 7 ngày (món Việt) cho nam sinh 1981 với các vấn đề (XN 03/06/2026):
+- Acid uric cao 520 µmol/L (nguy cơ gout) -> ÍT PURIN: tránh nội tạng, thịt đỏ nhiều, hải sản vỏ, cá béo, nước hầm xương, bia rượu.
+- Men gan GGT cao 112 -> KIÊNG rượu bia, ít đồ chiên rán & dầu mỡ.
+- Đường huyết 6.38 (hơi cao) -> ÍT ĐƯỜNG/TINH BỘT NHANH: ưu tiên gạo lứt, khoai lang, rau.
+- Cholesterol 6.04 (cận cao) -> BỎ mỡ động vật & LÒNG ĐỎ trứng (chỉ dùng lòng trắng, tối đa 4/ngày); dầu ô liu ≤1 thìa/ngày.
+- Creatinine 111 (thận chịu áp lực) -> đạm VỪA PHẢI, tối đa 150–200g thịt/cá sống/ngày.
+NGUYÊN TẮC BẮT BUỘC:
+- Khung giờ ăn 12:12: ăn 07:00–19:00. Rau 300–400g/ngày, nước 2–2.5L/ngày.
+- Bữa SÁNG cố định: 1 củ khoai lang luộc + 2 lòng trắng trứng luộc + nước ấm.
+- Bữa TRƯA và TỐI GIỐNG NHAU (nấu 1 lần chia 2 hộp). Thêm 1 bữa phụ 15:00 (sữa chua không đường / ½ ổi / 1 nắm hạnh nhân).
+- Mỗi bữa chính: ½ chén cơm gạo lứt (hoặc 1 củ khoai lang) + 1 món đạm LUỘC/HẤP/ÁP CHẢO (ức gà bỏ da / cá đồng / đậu hũ) + 1 dĩa rau luộc lớn.
+QUAN TRỌNG: ghi RÕ TÊN món cụ thể (rau gì, cá gì) và KHẨU PHẦN (gram/chén/bát/quả). Ưu tiên cá nạc (cá lóc, rô, diêu hồng, chẽm, liệt), đậu hũ, ức gà, khổ qua, đậu bắp, rau xanh, gạo lứt, khoai lang. Tránh nội tạng, hải sản vỏ, cá béo (mòi/trích/cơm/thu/ngừ), lòng đỏ trứng, trái cây rất ngọt, đồ chiên, rượu bia.
+Người này nặng ~56kg nên cần đạm VỪA PHẢI ~45–67g/ngày. Mỗi bữa thêm "pg" = gram protein ước tính, tổng mỗi ngày khoảng 50–67g.
 CHỈ trả về JSON đúng định dạng sau (không kèm chữ nào khác), lv: 0=nên ăn,1=vừa phải,2=hạn chế; pg=gram đạm:
-[{"day":"Thứ 2","meals":[{"t":"Sáng","d":"...","lv":0,"pg":15},{"t":"Trưa","d":"...","lv":0,"pg":25},{"t":"Tối","d":"...","lv":0,"pg":22}]}, ... đủ 7 ngày tới Chủ nhật]`;
+[{"day":"Thứ 2","meals":[{"t":"Sáng","d":"...","lv":0,"pg":9},{"t":"Trưa","d":"...","lv":0,"pg":25},{"t":"Tối (=trưa)","d":"...","lv":0,"pg":25},{"t":"Phụ 15:00","d":"...","lv":0,"pg":5}]}, ... đủ 7 ngày tới Chủ nhật]`;
 function copyPrompt(){navigator.clipboard.writeText(CLAUDE_PROMPT).then(()=>alert('Đã sao chép! Mở Claude.ai → dán → gửi → copy JSON Claude trả về → dán vào ô bên dưới.'));}
 function applyMenu(){
   try{
@@ -575,7 +672,7 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
 });
 
 /* init */
-renderWeekly();renderWater();
+renderWeekly();renderWater();renderRhythm();
 
 /* service worker để chạy offline khi đã cài */
 if('serviceWorker' in navigator){
